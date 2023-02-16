@@ -1,5 +1,4 @@
 package com.storage.storagestoresocks.services;
 
-
-public interface SocksService {
+public interface FileService {
 }

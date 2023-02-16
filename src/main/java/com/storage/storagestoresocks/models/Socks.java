@@ -1,55 +1,38 @@
 package com.storage.storagestoresocks.models;
 
+import com.storage.storagestoresocks.models.enums.Color;
+import com.storage.storagestoresocks.models.enums.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.*;
+import java.util.Objects;
 
 @Data
+@NoArgsConstructor
 public class Socks {
 
     Size size;
 
     Color color;
 
+    @Max(value = 100, message = "Не может быть больше 100")
+    @Positive(message = "Не может быть отрицательным")
     int cotton;
 
+    int quantity;
 
 
-    public enum Size {
-
-        SIZE_S(36.0),
-
-        SIZE_M(38.0),
-
-        SIZE_L(40.0);
-
-        final double size;
-
-        Size(double size) {
-            this.size = size;
-        }
-
-        @Override
-        public String toString() {
-            return "Размер носков: " + size;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Socks socks = (Socks) o;
+        return cotton == socks.cotton && size == socks.size && color == socks.color;
     }
 
-    public enum Color {
-
-        GREEN("Зеленый"),
-
-        BLUE("Голубой"),
-
-        WHITE("Белый");
-
-        final String color;
-
-        Color(String s) {
-            this.color = s;
-        }
-
-        @Override
-        public String toString() {
-            return "Цвет носков: " + color;
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(size, color, cotton);
     }
 }
