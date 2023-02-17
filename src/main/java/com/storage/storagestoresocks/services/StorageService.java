@@ -1,23 +1,24 @@
 package com.storage.storagestoresocks.services;
 
 import com.storage.storagestoresocks.exceptions.QuantityException;
-import com.storage.storagestoresocks.models.Socks;
-import com.storage.storagestoresocks.models.enums.Color;
-import com.storage.storagestoresocks.models.enums.Size;
+import com.storage.storagestoresocks.models.clothes.Clothes;
+import com.storage.storagestoresocks.models.clothes.enums.Color;
+import com.storage.storagestoresocks.models.clothes.enums.Size;
+
 
 import java.util.List;
 import java.util.Map;
 
 public interface StorageService {
-    void addSocksInStorage(Socks socks) throws QuantityException;
+    void addSocksInStorage(Clothes clothes) throws QuantityException;
 
-    abstract List<Socks> obtainAllSocks();
+    List<Clothes> obtainAllSocks();
 
-    Map<Integer, Socks> obtainMapAllSocks();
+    Map<Integer, Clothes> obtainMapAllSocks();
 
-    int getFromStock(Socks socks) throws QuantityException;
+    int getFromStock(Clothes clothes) throws QuantityException;
 
-    int deleteFromStock(Socks socks) throws QuantityException;
+    int deleteFromStock(Clothes clothes) throws QuantityException;
 
     int availabilityCheck(Color color,
                           Size size,

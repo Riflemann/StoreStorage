@@ -1,6 +1,8 @@
 package com.storage.storagestoresocks.controllers;
 
 import com.storage.storagestoresocks.services.FileService;
+import com.storage.storagestoresocks.services.StorageService;
+import com.storage.storagestoresocks.services.TransactionsService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -77,7 +79,7 @@ public class FilesController {
         fileService.cleanFile(storageFileName);
         File storageFile = new File(filePath + "/" + storageFileName);
 
-        try(FileOutputStream fos = new FileOutputStream(storageFile)) {
+        try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
             return ResponseEntity.ok().build();
@@ -93,7 +95,7 @@ public class FilesController {
         fileService.cleanFile(transactionFileName);
         File storageFile = new File(filePath + "/" + transactionFileName);
 
-        try(FileOutputStream fos = new FileOutputStream(storageFile)) {
+        try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
             return ResponseEntity.ok().build();
@@ -108,26 +110,6 @@ public class FilesController {
     public ResponseEntity<Object> getTxtFile() {
         try {
             Path path = fileService.createTxtFile(storageService.obtainMapAllSocks());
-            if (Files.size(path) == 0) {
-                return ResponseEntity.noContent().build();
-            }
-            InputStreamResource resource = new InputStreamResource(new FileInputStream(path.toFile()));
-            return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .contentLength(Files.size(path))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"recipeBook.txt\"")
-                    .body(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body(e.toString());
-        }
-
-    }
-
-    @GetMapping("/gettxtfile")
-    public ResponseEntity<Object> getTxtFile() {
-        try {
-            Path path = fileService.createTempFile("txtFile");
             if (Files.size(path) == 0) {
                 return ResponseEntity.noContent().build();
             }

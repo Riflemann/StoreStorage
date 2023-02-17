@@ -1,6 +1,7 @@
 package com.storage.storagestoresocks.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.services.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -67,25 +68,25 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Path createTxtFile(Map<Integer, Socks> storage) throws IOException {
+    public Path createTxtFile(Map<Integer, Clothes> storage) throws IOException {
         Path storageTxt = createTempFile("Storage");
 
         try (Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8)) {
             writer.append("На складе в данный момент: \n")
                     .append("Носки\n");
-            for (Socks sock : storage.values()) {
+            for (Clothes clothes : storage.values()) {
                 writer
                         .append("Размер: \n")
-                        .append(String.valueOf(sock.getSize()))
+                        .append(String.valueOf(clothes.getSize()))
                         .append("\n")
                         .append("Цвет: \n")
-                        .append(String.valueOf(sock.getColor()))
+                        .append(String.valueOf(clothes.getColor()))
                         .append("\n")
                         .append("Содержание хлопка: \n")
-                        .append(String.valueOf(sock.getCotton()))
+                        .append(String.valueOf(clothes.getCotton()))
                         .append("\n")
                         .append("Количество: \n")
-                        .append(String.valueOf(sock.getQuantity()))
+                        .append(String.valueOf(clothes.getQuantity()))
                         .append("\n");
             }
         }

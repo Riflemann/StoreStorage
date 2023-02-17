@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
-public class Socks extends clothes {
+public class Socks extends Clothes {
 
     @Override
     public boolean equals(Object o) {

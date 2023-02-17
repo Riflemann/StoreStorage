@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.exceptions.QuantityException;
-import com.storage.storagestoresocks.models.Clothes;
-import com.storage.storagestoresocks.models.Socks;
-import com.storage.storagestoresocks.models.enums.*;
+import com.storage.storagestoresocks.models.clothes.Clothes;
+import com.storage.storagestoresocks.models.clothes.enums.Color;
+import com.storage.storagestoresocks.models.clothes.enums.Size;
+import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
 import com.storage.storagestoresocks.services.TransactionsService;
@@ -37,7 +38,7 @@ public class StorageServiceImpl implements StorageService {
     @Value("${path.to.file.folder}")
     private String filePath;
 
-    Map<Integer, Socks> storage = new HashMap<>();
+    Map<Integer, Clothes> storage = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -116,7 +117,7 @@ public class StorageServiceImpl implements StorageService {
                     clothes.getCotton() > cottonMin &&
                     clothes.getCotton() < cottonMax) {
 
-                quantity += socks.getQuantity();
+                quantity += clothes.getQuantity();
 
             }
         }
