@@ -23,14 +23,14 @@ public class StorageController {
     @PostMapping()
     public ResponseEntity<Clothes[]> addSocksInStorage(@Valid @RequestBody Clothes...clothes) throws QuantityException {
         for (Clothes clothe : clothes) {
-         storageService.addSocksInStorage(clothe);
+         storageService.addClothesInStorage(clothe);
         }
         return ResponseEntity.ok(clothes);
     }
 
     @GetMapping("/allSocks")
     public ResponseEntity<List<Clothes>> getAllSocksList() {
-        return ResponseEntity.ok(storageService.obtainAllSocks());
+        return ResponseEntity.ok(storageService.obtainAllClothes());
     }
 
     @GetMapping("/quantity")

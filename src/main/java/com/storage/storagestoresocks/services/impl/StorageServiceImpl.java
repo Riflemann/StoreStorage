@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void addSocksInStorage(Clothes clothes) throws QuantityException {
+    public void addClothesInStorage(Clothes clothes) throws QuantityException {
         if (!storage.containsValue(clothes)) {
             storage.put(counter++, clothes);
         } else {
@@ -75,12 +76,12 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<Clothes> obtainAllSocks() {
+    public List<Clothes> obtainAllClothes() {
         return new ArrayList<>(storage.values());
     }
 
     @Override
-    public Map<Integer, Clothes> obtainMapAllSocks() {
+    public Map<Integer, Clothes> obtainMapAllClothes() {
         return storage;
     }
 
@@ -119,68 +120,47 @@ public class StorageServiceImpl implements StorageService {
                                  int cottonMin,
                                  int cottonMax) {
         int quantity = 0;
+        boolean isColor = false;
+        boolean isSize = false;
+        boolean isTypeClothes = false;
 
-        if (color == null) {
-            for (Clothes clothes : storage.values()) {
-                if (clothes.getSize() == size &&
-                        clothes.getTypeClothes() == typeClothes &&
-                        clothes.getCotton() > cottonMin &&
-                        clothes.getCotton() < cottonMax) {
-
-                    quantity += clothes.getQuantity();
-
-                }
+        for (Clothes clothes : storage.values()) {
+            if (color != null) {
+                isColor = true;
             }
-        } else if (size == null) {
-            for (Clothes clothes : storage.values()) {
-                if (clothes.getColor() == color &&
-                        clothes.getTypeClothes() == typeClothes &&
-                        clothes.getCotton() > cottonMin &&
-                        clothes.getCotton() < cottonMax) {
-
-                    quantity += clothes.getQuantity();
-
-                }
+            if (size != null) {
+                isSize = true;
             }
-        } else if (typeClothes == null) {
-            for (Clothes clothes : storage.values()) {
-                if (clothes.getColor() == color &&
-                        clothes.getSize() == size &&
-                        clothes.getCotton() > cottonMin &&
-                        clothes.getCotton() < cottonMax) {
-
-                    quantity += clothes.getQuantity();
-
-                }
+            if (typeClothes != null) {
+                isTypeClothes = true;
             }
-        } else {
-            for (Clothes clothes : storage.values()) {
-                if (clothes.getColor() == color &&
-                        clothes.getSize() == size &&
-                        clothes.getTypeClothes() == typeClothes &&
-                        clothes.getCotton() > cottonMin &&
-                        clothes.getCotton() < cottonMax) {
 
-                    quantity += clothes.getQuantity();
 
-                }
+            if (isColor &&
+                    isSize &&
+                    isTypeClothes &&
+                    clothes.getCotton() > cottonMin &&
+                    clothes.getCotton() < cottonMax) {
+
+                quantity += clothes.getQuantity();
             }
         }
 
         return quantity;
+
     }
 
-    public static int checkQuantity(Clothes socks, Map<Integer, Clothes> map) throws QuantityException {
+    public static int checkQuantity(Clothes clothes, Map<Integer, Clothes> map) throws QuantityException {
         int key = 0;
 
-        if (socks.getQuantity() <= 0) {
+        if (clothes.getQuantity() <= 0) {
             throw new QuantityException("Не указано количество носков");
         }
 
-        for (Map.Entry<Integer, Clothes> socksEntry : map.entrySet()) {
-            if (socksEntry.getValue().equals(socks)) {
-                key = socksEntry.getKey();
-                if (socksEntry.getValue().getQuantity() < socks.getQuantity()) {
+        for (Map.Entry<Integer, Clothes> clothesEntry : map.entrySet()) {
+            if (clothesEntry.getValue().equals(clothes)) {
+                key = clothesEntry.getKey();
+                if (clothesEntry.getValue().getQuantity() < clothes.getQuantity()) {
                     throw new QuantityException("Указанного количества нет не складе");
                 }
             }
