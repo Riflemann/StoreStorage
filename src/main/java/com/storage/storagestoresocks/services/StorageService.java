@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface StorageService {
-    void addSocksInStorage(Clothes clothes) throws QuantityException;
+    void addClothesInStorage(Clothes clothes) throws QuantityException;
 
-    List<Clothes> obtainAllSocks();
+    List<Clothes> obtainAllClothes();
 
-    Map<Integer, Clothes> obtainMapAllSocks();
+    Map<Integer, Clothes> obtainMapAllClothes();
 
     int getFromStock(Clothes clothes) throws QuantityException;
 

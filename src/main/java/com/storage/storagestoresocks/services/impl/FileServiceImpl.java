@@ -70,8 +70,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public Path createTxtFile(Map<Integer, Clothes> storage) throws IOException {
         Path storageTxt = createTempFile("Storage");
-
-        try (Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8)) {
+        Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
             writer.append("На складе в данный момент: \n")
                     .append("Носки\n");
             for (Clothes clothes : storage.values()) {
@@ -88,8 +87,9 @@ public class FileServiceImpl implements FileService {
                         .append("Количество: \n")
                         .append(String.valueOf(clothes.getQuantity()))
                         .append("\n");
-            }
+
         }
+            writer.close();
         return storageTxt;
     }
 

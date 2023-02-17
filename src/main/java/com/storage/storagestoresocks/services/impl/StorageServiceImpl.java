@@ -54,7 +54,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void addSocksInStorage(Clothes clothes) throws QuantityException {
+    public void addClothesInStorage(Clothes clothes) throws QuantityException {
         if (!storage.containsValue(clothes)) {
             storage.put(counter++, clothes);
         } else {
@@ -75,12 +75,12 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<Clothes> obtainAllSocks() {
+    public List<Clothes> obtainAllClothes() {
         return new ArrayList<>(storage.values());
     }
 
     @Override
-    public Map<Integer, Clothes> obtainMapAllSocks() {
+    public Map<Integer, Clothes> obtainMapAllClothes() {
         return storage;
     }
 
@@ -174,17 +174,17 @@ public class StorageServiceImpl implements StorageService {
         return quantity;
     }
 
-    public static int checkQuantity(Clothes socks, Map<Integer, Clothes> map) throws QuantityException {
+    public static int checkQuantity(Clothes clothes, Map<Integer, Clothes> map) throws QuantityException {
         int key = 0;
 
-        if (socks.getQuantity() <= 0) {
+        if (clothes.getQuantity() <= 0) {
             throw new QuantityException("Не указано количество носков");
         }
 
-        for (Map.Entry<Integer, Clothes> socksEntry : map.entrySet()) {
-            if (socksEntry.getValue().equals(socks)) {
-                key = socksEntry.getKey();
-                if (socksEntry.getValue().getQuantity() < socks.getQuantity()) {
+        for (Map.Entry<Integer, Clothes> clothesEntry : map.entrySet()) {
+            if (clothesEntry.getValue().equals(clothes)) {
+                key = clothesEntry.getKey();
+                if (clothesEntry.getValue().getQuantity() < clothes.getQuantity()) {
                     throw new QuantityException("Указанного количества нет не складе");
                 }
             }

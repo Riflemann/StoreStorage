@@ -109,7 +109,7 @@ public class FilesController {
     @GetMapping("/getStorageTxtFile")
     public ResponseEntity<Object> getTxtFile() {
         try {
-            Path path = fileService.createTxtFile(storageService.obtainMapAllSocks());
+            Path path = fileService.createTxtFile(storageService.obtainMapAllClothes());
             if (Files.size(path) == 0) {
                 return ResponseEntity.noContent().build();
             }
