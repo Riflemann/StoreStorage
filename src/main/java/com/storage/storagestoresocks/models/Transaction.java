@@ -1,12 +1,8 @@
 package com.storage.storagestoresocks.models;
 
-import com.storage.storagestoresocks.models.enums.Color;
-import com.storage.storagestoresocks.models.enums.Size;
-import com.storage.storagestoresocks.models.enums.TypeTransaction;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

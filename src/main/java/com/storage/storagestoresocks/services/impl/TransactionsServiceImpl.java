@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.models.Transaction;
-import com.storage.storagestoresocks.models.enums.*;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Value;

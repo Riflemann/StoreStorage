@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/files")
@@ -96,5 +98,25 @@ public class FilesController {
             e.printStackTrace();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @GetMapping("/gettxtfile")
+    public ResponseEntity<Object> getTxtFile() {
+        try {
+            Path path = fileService.createTempFile("txtFile");
+            if (Files.size(path) == 0) {
+                return ResponseEntity.noContent().build();
+            }
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(path.toFile()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .contentLength(Files.size(path))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"recipeBook.txt\"")
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.toString());
+        }
+
     }
 }

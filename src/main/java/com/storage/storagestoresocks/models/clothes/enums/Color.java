@@ -1,4 +1,4 @@
-package com.storage.storagestoresocks.models.enums;
+package com.storage.storagestoresocks.models.clothes.enums;
 
 public enum Color {
 

@@ -1,9 +1,9 @@
 package com.storage.storagestoresocks.services;
 
 import com.storage.storagestoresocks.models.Transaction;
-import com.storage.storagestoresocks.models.enums.Color;
-import com.storage.storagestoresocks.models.enums.Size;
-import com.storage.storagestoresocks.models.enums.TypeTransaction;
+import com.storage.storagestoresocks.models.clothes.enums.Color;
+import com.storage.storagestoresocks.models.clothes.enums.Size;
+import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.storage.storagestoresocks.controllers;
 
-import com.storage.storagestoresocks.models.Socks;
 import com.storage.storagestoresocks.models.Transaction;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.http.ResponseEntity;

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.exceptions.QuantityException;
-import com.storage.storagestoresocks.models.Socks;
-import com.storage.storagestoresocks.models.enums.*;
+import com.storage.storagestoresocks.models.clothes.Clothes;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
 import com.storage.storagestoresocks.services.TransactionsService;
@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ public class StorageServiceImpl implements StorageService {
     @Value("${path.to.file.folder}")
     private String filePath;
 
-    Map<Integer, Socks> storage = new HashMap<>();
+    Map<Integer, Clothes> storage = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -53,67 +50,67 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void addSocksInStorage(Socks socks) throws QuantityException {
-        if (!storage.containsValue(socks)) {
-            storage.put(counter++, socks);
+    public void addSocksInStorage(Clothes clothes) throws QuantityException {
+        if (!storage.containsValue(clothes)) {
+            storage.put(counter++, clothes);
         } else {
-            int key = checkQuantity(socks, storage);
-            storage.get(key).setQuantity(storage.get(key).getQuantity() + socks.getQuantity());
+            int key = checkQuantity(clothes, storage);
+            storage.get(key).setQuantity(storage.get(key).getQuantity() + clothes.getQuantity());
         }
 
         fileService.saveToFile(fileStorageName, storage);
 
         transactionsService.addTransactions(
                 TypeTransaction.INCOMING,
-                socks.getQuantity(),
-                socks.getSize(),
-                socks.getCotton(),
-                socks.getColor());
+                clothes.getQuantity(),
+                clothes.getSize(),
+                clothes.getCotton(),
+                clothes.getColor());
 
     }
 
     @Override
-    public List<Socks> obtainAllSocks() {
+    public List<Clothes> obtainAllSocks() {
         return new ArrayList<>(storage.values());
     }
 
     @Override
-    public int getFromStock(Socks socks) throws QuantityException {
+    public int getFromStock(Clothes clothes) throws QuantityException {
 
         transactionsService.addTransactions(
                 TypeTransaction.OUTCOMING,
-                socks.getQuantity(),
-                socks.getSize(),
-                socks.getCotton(),
-                socks.getColor());
+                clothes.getQuantity(),
+                clothes.getSize(),
+                clothes.getCotton(),
+                clothes.getColor());
 
-        return changeQuantityInStorage(socks);
+        return changeQuantityInStorage(clothes);
     }
 
     @Override
-    public int deleteFromStock(Socks socks) throws QuantityException {
+    public int deleteFromStock(Clothes clothes) throws QuantityException {
 
         transactionsService.addTransactions(
                 TypeTransaction.DEPRECATED,
-                socks.getQuantity(),
-                socks.getSize(),
-                socks.getCotton(),
-                socks.getColor());
+                clothes.getQuantity(),
+                clothes.getSize(),
+                clothes.getCotton(),
+                clothes.getColor());
 
-        return changeQuantityInStorage(socks);
+        return changeQuantityInStorage(clothes);
     }
 
     @Override
     public int availabilityCheck(Color color, Size size, int cottonMin, int cottonMax) {
         int quantity = 0;
 
-        for (Socks socks : storage.values()) {
-            if (socks.getColor() == color &&
-                    socks.getSize() == size &&
-                    socks.getCotton() > cottonMin &&
-                    socks.getCotton() < cottonMax) {
+        for (Clothes clothes : storage.values()) {
+            if (clothes.getColor() == color &&
+                    clothes.getSize() == size &&
+                    clothes.getCotton() > cottonMin &&
+                    clothes.getCotton() < cottonMax) {
 
-                quantity += socks.getQuantity();
+                quantity += clothes.getQuantity();
 
             }
         }
@@ -122,14 +119,14 @@ public class StorageServiceImpl implements StorageService {
     }
 
 
-    public static int checkQuantity(Socks socks, Map<Integer, Socks> map) throws QuantityException {
+    public static int checkQuantity(Clothes socks, Map<Integer, Clothes> map) throws QuantityException {
         int key = 0;
 
         if (socks.getQuantity() <= 0) {
             throw new QuantityException("Не указано количество носков");
         }
 
-        for (Map.Entry<Integer, Socks> socksEntry : map.entrySet()) {
+        for (Map.Entry<Integer, Clothes> socksEntry : map.entrySet()) {
             if (socksEntry.getValue().equals(socks)) {
                 key = socksEntry.getKey();
                 if (socksEntry.getValue().getQuantity() < socks.getQuantity()) {
@@ -144,7 +141,7 @@ public class StorageServiceImpl implements StorageService {
         try {
             if (Files.exists(Path.of(filePath, fileStorageName))) {
                 String json = fileService.readFile(fileStorageName);
-                storage = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Socks>>() {
+                storage = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Clothes>>() {
                 });
             } else {
                 throw new FileNotFoundException();
@@ -154,40 +151,19 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-    private int changeQuantityInStorage(Socks socks) throws QuantityException {
+    private int changeQuantityInStorage(Clothes clothes) throws QuantityException {
 
-        int key = checkQuantity(socks, storage);
-        int newQuantity = storage.get(key).getQuantity() - socks.getQuantity();
+        int key = checkQuantity(clothes, storage);
+        int newQuantity = storage.get(key).getQuantity() - clothes.getQuantity();
         storage.get(key).setQuantity(newQuantity);
 
         fileService.saveToFile(fileStorageName, storage);
 
         return newQuantity;
     }
-
-
-    public Path createTxtFile() throws IOException {
-        Path storageTxt = fileService.createTempFile("Storage");
-        for (Socks sock : storage.values()) {
-            Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
-
-            writer
-                    .append("На складе в данный момент: \n")
-                    .append("Носки\n")
-                    .append("Размер: \n")
-                    .append(String.valueOf(sock.getSize()))
-                    .append("Цвет: \n")
-                    .append(String.valueOf(sock.getColor()))
-                    .append("Содержание хлопка: \n")
-                    .append(String.valueOf(sock.getCotton()))
-                    .append("Количество: \n")
-                    .append(String.valueOf(sock.getQuantity()))
-                    .append("\n");
-        }
-        return storageTxt;
-    }
-
-
 }
+
+
+
 
 

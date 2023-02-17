@@ -1,11 +1,14 @@
 package com.storage.storagestoresocks.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.services.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -62,5 +65,27 @@ public class FileServiceImpl implements FileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Path createTxtFile(Map<Integer, Clothes> storage) throws IOException {
+        Path storageTxt = createTempFile("Storage");
+        for (Clothes clothes : storage.values()) {
+            Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
+
+            writer
+                    .append("На складе в данный момент: \n")
+                    .append("Носки\n")
+                    .append("Размер: \n")
+                    .append(String.valueOf(clothes.getSize()))
+                    .append("Цвет: \n")
+                    .append(String.valueOf(clothes.getColor()))
+                    .append("Содержание хлопка: \n")
+                    .append(String.valueOf(clothes.getCotton()))
+                    .append("Количество: \n")
+                    .append(String.valueOf(clothes.getQuantity()))
+                    .append("\n");
+        }
+        return storageTxt;
     }
 }

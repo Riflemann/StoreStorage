@@ -1,8 +1,9 @@
 package com.storage.storagestoresocks.controllers;
 
 import com.storage.storagestoresocks.exceptions.QuantityException;
-import com.storage.storagestoresocks.models.Socks;
-import com.storage.storagestoresocks.models.enums.*;
+import com.storage.storagestoresocks.models.clothes.Clothes;
+import com.storage.storagestoresocks.models.clothes.Socks;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.services.StorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +22,15 @@ public class StorageController {
     }
 
     @PostMapping()
-    public ResponseEntity<Socks[]> addSocksInStorage(@Valid @RequestBody Socks...socks) throws QuantityException {
-        for (Socks sock : socks) {
-         storageService.addSocksInStorage(sock);
+    public ResponseEntity<Clothes[]> addSocksInStorage(@Valid @RequestBody Clothes...clothes) throws QuantityException {
+        for (Clothes clothe : clothes) {
+         storageService.addSocksInStorage(clothe);
         }
-        return ResponseEntity.ok(socks);
+        return ResponseEntity.ok(clothes);
     }
 
     @GetMapping("/allSocks")
-    public ResponseEntity<List<Socks>> getAllSocksList() {
+    public ResponseEntity<List<Clothes>> getAllSocksList() {
         return ResponseEntity.ok(storageService.obtainAllSocks());
     }
 
@@ -46,10 +47,10 @@ public class StorageController {
     }
 
     @PutMapping
-    public ResponseEntity<Object> getFromStock(@Valid @RequestBody Socks socks) {
+    public ResponseEntity<Object> getFromStock(@Valid @RequestBody Clothes clothes) {
         int a = 0;
         try {
-            a = storageService.getFromStock(socks);
+            a = storageService.getFromStock(clothes);
         } catch (QuantityException e) {
             ResponseEntity.badRequest().body(e);
         }
@@ -57,10 +58,10 @@ public class StorageController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteFromStock(@Valid @RequestBody Socks socks) {
+    public ResponseEntity<Object> deleteFromStock(@Valid @RequestBody Clothes clothes) {
         int a = 0;
         try {
-            a = storageService.deleteFromStock(socks);
+            a = storageService.deleteFromStock(clothes);
         } catch (QuantityException e) {
             ResponseEntity.badRequest().body(e);
         }

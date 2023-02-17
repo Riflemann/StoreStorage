@@ -1,27 +1,13 @@
-package com.storage.storagestoresocks.models;
+package com.storage.storagestoresocks.models.clothes;
 
-import com.storage.storagestoresocks.models.enums.Color;
-import com.storage.storagestoresocks.models.enums.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
 import java.util.Objects;
 
 @Data
 @NoArgsConstructor
-public class Socks {
-
-    Size size;
-
-    Color color;
-
-    @Max(value = 100, message = "Не может быть больше 100")
-    @Positive(message = "Не может быть отрицательным")
-    int cotton;
-
-    int quantity;
-
+public class Socks extends clothes {
 
     @Override
     public boolean equals(Object o) {
