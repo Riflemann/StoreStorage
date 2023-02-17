@@ -22,7 +22,7 @@ public class TransactionsController {
 
     @GetMapping("/allTransactions")
     public ResponseEntity<List<Transaction>> getAllSocksList() {
-        return ResponseEntity.ok(transactionsService.getAllTransactions());
+        return ResponseEntity.ok().body(transactionsService.getAllTransactions());
     }
 
 
