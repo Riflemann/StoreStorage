@@ -121,7 +121,7 @@ public class StorageServiceImpl implements StorageService {
         int quantity = 0;
 
 /*
-*  todo проверить работу метода
+*  todo проверить работу методава
 * */
 
         if (color == null) {
