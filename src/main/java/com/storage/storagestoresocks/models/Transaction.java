@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
 public class Transaction {
     TypeTransaction typeTransaction;
 
-    LocalDateTime createTime;
+    String createTime;
 
     int socksQuantity;
 
@@ -43,9 +44,11 @@ public class Transaction {
     }
 
     public static class TransactionBuilder {
+
+        final static DateTimeFormatter FORMAT_DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         private TypeTransaction typeTransaction;
 
-        private LocalDateTime createTime;
+        private String createTime;
 
         private int socksQuantity;
 
@@ -67,7 +70,7 @@ public class Transaction {
         }
 
         public TransactionBuilder createTime(LocalDateTime createTime) {
-            this.createTime = createTime;
+            this.createTime = createTime.format(FORMAT_DATE);
             return this;
         }
 

@@ -1,12 +1,24 @@
 package com.storage.storagestoresocks.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.Socks;
-import com.storage.storagestoresocks.models.enums.Color;
-import com.storage.storagestoresocks.models.enums.Size;
+import com.storage.storagestoresocks.models.enums.*;
+import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
+import com.storage.storagestoresocks.services.TransactionsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +26,31 @@ import java.util.Map;
 
 @Service
 public class StorageServiceImpl implements StorageService {
+
+    private final TransactionsService transactionsService;
+
+    private final FileService fileService;
+
     static int counter;
 
+    @Value("${name.of.storage.file}")
+    private String fileStorageName;
+
+    @Value("${path.to.file.folder}")
+    private String filePath;
+
     Map<Integer, Socks> storage = new HashMap<>();
+
+    @PostConstruct
+    private void init() {
+        readFromFile();
+        counter = storage.size();
+    }
+
+    public StorageServiceImpl(TransactionsService transactionsService, FileService fileService) {
+        this.transactionsService = transactionsService;
+        this.fileService = fileService;
+    }
 
     @Override
     public void addSocksInStorage(Socks socks) throws QuantityException {
@@ -27,6 +61,14 @@ public class StorageServiceImpl implements StorageService {
             storage.get(key).setQuantity(storage.get(key).getQuantity() + socks.getQuantity());
         }
 
+        fileService.saveToFile(fileStorageName, storage);
+
+        transactionsService.addTransactions(
+                TypeTransaction.INCOMING,
+                socks.getQuantity(),
+                socks.getSize(),
+                socks.getCotton(),
+                socks.getColor());
 
     }
 
@@ -37,29 +79,36 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public int getFromStock(Socks socks) throws QuantityException {
-        int key = checkQuantity(socks, storage);
-        int onStock = storage.get(key).getQuantity() - socks.getQuantity();
-        storage.get(key).setQuantity(storage.get(key).getQuantity() - socks.getQuantity());
-        return onStock;
+
+        transactionsService.addTransactions(
+                TypeTransaction.OUTCOMING,
+                socks.getQuantity(),
+                socks.getSize(),
+                socks.getCotton(),
+                socks.getColor());
+
+        return changeQuantityInStorage(socks);
     }
 
     @Override
     public int deleteFromStock(Socks socks) throws QuantityException {
-        int key = checkQuantity(socks, storage);
-        int deleted = storage.get(key).getQuantity() - socks.getQuantity();
-        storage.get(key).setQuantity(storage.get(key).getQuantity() - socks.getQuantity());
-        return deleted;
+
+        transactionsService.addTransactions(
+                TypeTransaction.DEPRECATED,
+                socks.getQuantity(),
+                socks.getSize(),
+                socks.getCotton(),
+                socks.getColor());
+
+        return changeQuantityInStorage(socks);
     }
 
     @Override
-    public int availabilityCheck(Color color,
-                                 Size size,
-                                 int cottonMin,
-                                 int cottonMax) {
+    public int availabilityCheck(Color color, Size size, int cottonMin, int cottonMax) {
         int quantity = 0;
 
         for (Socks socks : storage.values()) {
-            if (    socks.getColor() == color &&
+            if (socks.getColor() == color &&
                     socks.getSize() == size &&
                     socks.getCotton() > cottonMin &&
                     socks.getCotton() < cottonMax) {
@@ -86,10 +135,59 @@ public class StorageServiceImpl implements StorageService {
                 if (socksEntry.getValue().getQuantity() < socks.getQuantity()) {
                     throw new QuantityException("Указанного количества нет не складе");
                 }
-            } else {
-                throw new QuantityException("Данных носков нет не складе");
             }
         }
         return key;
     }
+
+    private void readFromFile() {
+        try {
+            if (Files.exists(Path.of(filePath, fileStorageName))) {
+                String json = fileService.readFile(fileStorageName);
+                storage = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Socks>>() {
+                });
+            } else {
+                throw new FileNotFoundException();
+            }
+        } catch (JsonProcessingException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int changeQuantityInStorage(Socks socks) throws QuantityException {
+
+        int key = checkQuantity(socks, storage);
+        int newQuantity = storage.get(key).getQuantity() - socks.getQuantity();
+        storage.get(key).setQuantity(newQuantity);
+
+        fileService.saveToFile(fileStorageName, storage);
+
+        return newQuantity;
+    }
+
+
+    public Path createTxtFile() throws IOException {
+        Path storageTxt = fileService.createTempFile("Storage");
+        for (Socks sock : storage.values()) {
+            Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
+
+            writer
+                    .append("На складе в данный момент: \n")
+                    .append("Носки\n")
+                    .append("Размер: \n")
+                    .append(String.valueOf(sock.getSize()))
+                    .append("Цвет: \n")
+                    .append(String.valueOf(sock.getColor()))
+                    .append("Содержание хлопка: \n")
+                    .append(String.valueOf(sock.getCotton()))
+                    .append("Количество: \n")
+                    .append(String.valueOf(sock.getQuantity()))
+                    .append("\n");
+        }
+        return storageTxt;
+    }
+
+
 }
+
+

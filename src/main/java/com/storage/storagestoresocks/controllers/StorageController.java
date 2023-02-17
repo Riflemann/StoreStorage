@@ -4,7 +4,6 @@ import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.Socks;
 import com.storage.storagestoresocks.models.enums.*;
 import com.storage.storagestoresocks.services.StorageService;
-import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,25 +16,15 @@ public class StorageController {
 
     StorageService storageService;
 
-    TransactionsService transactionsService;
-
-    public StorageController(StorageService storageService, TransactionsService transactionsService) {
+    public StorageController(StorageService storageService) {
         this.storageService = storageService;
-        this.transactionsService = transactionsService;
     }
 
     @PostMapping()
-    public ResponseEntity<Socks> addSocksInStorage(@Valid @RequestBody Socks socks) throws QuantityException {
-
-        storageService.addSocksInStorage(socks);
-
-        transactionsService.addTransactions(
-                                            TypeTransaction.INCOMING,
-                                            socks.getQuantity(),
-                                            socks.getSize(),
-                                            socks.getCotton(),
-                                            socks.getColor());
-
+    public ResponseEntity<Socks[]> addSocksInStorage(@Valid @RequestBody Socks...socks) throws QuantityException {
+        for (Socks sock : socks) {
+         storageService.addSocksInStorage(sock);
+        }
         return ResponseEntity.ok(socks);
     }
 
@@ -64,14 +53,6 @@ public class StorageController {
         } catch (QuantityException e) {
             ResponseEntity.badRequest().body(e);
         }
-
-        transactionsService.addTransactions(
-                TypeTransaction.OUTCOMING,
-                socks.getQuantity(),
-                socks.getSize(),
-                socks.getCotton(),
-                socks.getColor());
-
         return ResponseEntity.ok().body("На складе осталось " + a);
     }
 
@@ -83,14 +64,6 @@ public class StorageController {
         } catch (QuantityException e) {
             ResponseEntity.badRequest().body(e);
         }
-
-        transactionsService.addTransactions(
-                TypeTransaction.DEPRECATED,
-                socks.getQuantity(),
-                socks.getSize(),
-                socks.getCotton(),
-                socks.getColor());
-
         return ResponseEntity.ok().body("На складе осталось " + a);
     }
 }
