@@ -120,6 +120,10 @@ public class StorageServiceImpl implements StorageService {
                                  int cottonMax) {
         int quantity = 0;
 
+/*
+*  todo проверить работу метода
+* */
+
         if (color == null) {
             for (Clothes clothes : storage.values()) {
                 if (clothes.getSize() == size &&
