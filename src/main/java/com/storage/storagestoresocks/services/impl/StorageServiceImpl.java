@@ -120,25 +120,20 @@ public class StorageServiceImpl implements StorageService {
                                  int cottonMin,
                                  int cottonMax) {
         int quantity = 0;
-        boolean isColor = false;
-        boolean isSize = false;
-        boolean isTypeClothes = false;
+        boolean isColor = color == null;
+        boolean isSize = size == null;
+        boolean isTypeClothes = typeClothes == null;
+
 
         for (Clothes clothes : storage.values()) {
-            if (color != null) {
-                isColor = true;
-            }
-            if (size != null) {
-                isSize = true;
-            }
-            if (typeClothes != null) {
-                isTypeClothes = true;
-            }
 
+/*
+todo не работает поиск для подсчета определенных вещей
+      */
 
-            if (isColor &&
-                    isSize &&
-                    isTypeClothes &&
+            if (isColor &
+                    isSize &
+                    isTypeClothes &
                     clothes.getCotton() > cottonMin &&
                     clothes.getCotton() < cottonMax) {
 
