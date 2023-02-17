@@ -29,9 +29,13 @@ public class FilesController {
     private String filePath;
 
     private FileService fileService;
+    private StorageService storageService;
+    private TransactionsService transactionsService;
 
-    public FilesController(FileService fileService) {
+    public FilesController(FileService fileService, StorageService storageService, TransactionsService transactionsService) {
         this.fileService = fileService;
+        this.storageService = storageService;
+        this.transactionsService = transactionsService;
     }
 
     @GetMapping(value = "/storage")
@@ -98,6 +102,26 @@ public class FilesController {
             e.printStackTrace();
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @GetMapping("/getStorageTxtFile")
+    public ResponseEntity<Object> getTxtFile() {
+        try {
+            Path path = fileService.createTxtFile(storageService.obtainMapAllSocks());
+            if (Files.size(path) == 0) {
+                return ResponseEntity.noContent().build();
+            }
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(path.toFile()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .contentLength(Files.size(path))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"recipeBook.txt\"")
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.toString());
+        }
+
     }
 
     @GetMapping("/gettxtfile")

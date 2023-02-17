@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.exceptions.QuantityException;
-import com.storage.storagestoresocks.models.clothes.Clothes;
-import com.storage.storagestoresocks.models.clothes.enums.*;
+import com.storage.storagestoresocks.models.Clothes;
+import com.storage.storagestoresocks.models.Socks;
+import com.storage.storagestoresocks.models.enums.*;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
 import com.storage.storagestoresocks.services.TransactionsService;
@@ -36,7 +37,7 @@ public class StorageServiceImpl implements StorageService {
     @Value("${path.to.file.folder}")
     private String filePath;
 
-    Map<Integer, Clothes> storage = new HashMap<>();
+    Map<Integer, Socks> storage = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -75,6 +76,11 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
+    public Map<Integer, Clothes> obtainMapAllSocks() {
+        return storage;
+    }
+
+    @Override
     public int getFromStock(Clothes clothes) throws QuantityException {
 
         transactionsService.addTransactions(
@@ -110,7 +116,7 @@ public class StorageServiceImpl implements StorageService {
                     clothes.getCotton() > cottonMin &&
                     clothes.getCotton() < cottonMax) {
 
-                quantity += clothes.getQuantity();
+                quantity += socks.getQuantity();
 
             }
         }
@@ -161,9 +167,11 @@ public class StorageServiceImpl implements StorageService {
 
         return newQuantity;
     }
+
+
+
+
+
 }
-
-
-
 
 

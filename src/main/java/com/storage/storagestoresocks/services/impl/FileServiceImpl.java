@@ -1,7 +1,6 @@
 package com.storage.storagestoresocks.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.services.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -68,24 +67,29 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Path createTxtFile(Map<Integer, Clothes> storage) throws IOException {
+    public Path createTxtFile(Map<Integer, Socks> storage) throws IOException {
         Path storageTxt = createTempFile("Storage");
-        for (Clothes clothes : storage.values()) {
-            Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
 
-            writer
-                    .append("На складе в данный момент: \n")
-                    .append("Носки\n")
-                    .append("Размер: \n")
-                    .append(String.valueOf(clothes.getSize()))
-                    .append("Цвет: \n")
-                    .append(String.valueOf(clothes.getColor()))
-                    .append("Содержание хлопка: \n")
-                    .append(String.valueOf(clothes.getCotton()))
-                    .append("Количество: \n")
-                    .append(String.valueOf(clothes.getQuantity()))
-                    .append("\n");
+        try (Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8)) {
+            writer.append("На складе в данный момент: \n")
+                    .append("Носки\n");
+            for (Socks sock : storage.values()) {
+                writer
+                        .append("Размер: \n")
+                        .append(String.valueOf(sock.getSize()))
+                        .append("\n")
+                        .append("Цвет: \n")
+                        .append(String.valueOf(sock.getColor()))
+                        .append("\n")
+                        .append("Содержание хлопка: \n")
+                        .append(String.valueOf(sock.getCotton()))
+                        .append("\n")
+                        .append("Количество: \n")
+                        .append(String.valueOf(sock.getQuantity()))
+                        .append("\n");
+            }
         }
         return storageTxt;
     }
+
 }
