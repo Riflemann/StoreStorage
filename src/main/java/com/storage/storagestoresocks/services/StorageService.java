@@ -4,6 +4,7 @@ import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
+import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 
 
 import java.util.List;
@@ -22,6 +23,7 @@ public interface StorageService {
 
     int availabilityCheck(Color color,
                           Size size,
+                          TypeClothes typeClothes,
                           int cottonMin,
                           int cottonMax);
 

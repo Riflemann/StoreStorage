@@ -46,12 +46,13 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public void addTransactions(TypeTransaction typeTransaction, int socksQuantity,
-                                Size size, int cotton, Color color) {
+    public void addTransactions(TypeTransaction typeTransaction, TypeClothes typeClothes,
+                                int socksQuantity, Size size, int cotton, Color color) {
 
         transactionsMap.put(counter, new Transaction.TransactionBuilder().
                 typeTransaction(typeTransaction).
                 iD(counter++).
+                typeClothes(typeClothes).
                 createTime(LocalDateTime.now()).
                 cotton(cotton).
                 size(size).

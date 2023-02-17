@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 public class Transaction {
     TypeTransaction typeTransaction;
 
+    TypeClothes typeClothes;
+
     String createTime;
 
     int socksQuantity;
@@ -32,6 +34,7 @@ public class Transaction {
             throw new IllegalArgumentException("Please provide valid socks number.");
         }
         this.typeTransaction = transactionBuilder.typeTransaction;
+        this.typeClothes = transactionBuilder.typeClothes;
         this.iD = transactionBuilder.iD;
         this.createTime = transactionBuilder.createTime;
         this.size = transactionBuilder.size;
@@ -43,6 +46,8 @@ public class Transaction {
 
         final static DateTimeFormatter FORMAT_DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         private TypeTransaction typeTransaction;
+
+        private TypeClothes typeClothes;
 
         private String createTime;
 
@@ -65,6 +70,10 @@ public class Transaction {
             return this;
         }
 
+        public TransactionBuilder typeClothes(TypeClothes typeClothes) {
+            this.typeClothes = typeClothes;
+            return this;
+        }
         public TransactionBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime.format(FORMAT_DATE);
             return this;

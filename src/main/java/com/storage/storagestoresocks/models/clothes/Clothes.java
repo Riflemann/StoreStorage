@@ -5,10 +5,11 @@ import lombok.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Positive;
-@Getter
-@Setter
-@EqualsAndHashCode
-public abstract class Clothes {
+@Data
+@NoArgsConstructor
+public class Clothes {
+
+    TypeClothes typeClothes;
 
     Size size;
 

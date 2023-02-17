@@ -1,8 +1,10 @@
 package com.storage.storagestoresocks.models.clothes;
 
+import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 @Data

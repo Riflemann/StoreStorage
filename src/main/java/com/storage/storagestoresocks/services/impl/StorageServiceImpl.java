@@ -7,12 +7,14 @@ import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
+import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
@@ -64,6 +66,7 @@ public class StorageServiceImpl implements StorageService {
 
         transactionsService.addTransactions(
                 TypeTransaction.INCOMING,
+                clothes.getTypeClothes(),
                 clothes.getQuantity(),
                 clothes.getSize(),
                 clothes.getCotton(),
@@ -86,6 +89,7 @@ public class StorageServiceImpl implements StorageService {
 
         transactionsService.addTransactions(
                 TypeTransaction.OUTCOMING,
+                clothes.getTypeClothes(),
                 clothes.getQuantity(),
                 clothes.getSize(),
                 clothes.getCotton(),
@@ -99,6 +103,7 @@ public class StorageServiceImpl implements StorageService {
 
         transactionsService.addTransactions(
                 TypeTransaction.DEPRECATED,
+                clothes.getTypeClothes(),
                 clothes.getQuantity(),
                 clothes.getSize(),
                 clothes.getCotton(),
@@ -108,23 +113,62 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public int availabilityCheck(Color color, Size size, int cottonMin, int cottonMax) {
+    public int availabilityCheck(@RequestParam(required = false) Color color,
+                                 @RequestParam(required = false) Size size,
+                                 @RequestParam(required = false) TypeClothes typeClothes,
+                                 int cottonMin,
+                                 int cottonMax) {
         int quantity = 0;
 
-        for (Clothes clothes : storage.values()) {
-            if (clothes.getColor() == color &&
-                    clothes.getSize() == size &&
-                    clothes.getCotton() > cottonMin &&
-                    clothes.getCotton() < cottonMax) {
+        if (color == null) {
+            for (Clothes clothes : storage.values()) {
+                if (clothes.getSize() == size &&
+                        clothes.getTypeClothes() == typeClothes &&
+                        clothes.getCotton() > cottonMin &&
+                        clothes.getCotton() < cottonMax) {
 
-                quantity += clothes.getQuantity();
+                    quantity += clothes.getQuantity();
 
+                }
+            }
+        } else if (size == null) {
+            for (Clothes clothes : storage.values()) {
+                if (clothes.getColor() == color &&
+                        clothes.getTypeClothes() == typeClothes &&
+                        clothes.getCotton() > cottonMin &&
+                        clothes.getCotton() < cottonMax) {
+
+                    quantity += clothes.getQuantity();
+
+                }
+            }
+        } else if (typeClothes == null) {
+            for (Clothes clothes : storage.values()) {
+                if (clothes.getColor() == color &&
+                        clothes.getSize() == size &&
+                        clothes.getCotton() > cottonMin &&
+                        clothes.getCotton() < cottonMax) {
+
+                    quantity += clothes.getQuantity();
+
+                }
+            }
+        } else {
+            for (Clothes clothes : storage.values()) {
+                if (clothes.getColor() == color &&
+                        clothes.getSize() == size &&
+                        clothes.getTypeClothes() == typeClothes &&
+                        clothes.getCotton() > cottonMin &&
+                        clothes.getCotton() < cottonMax) {
+
+                    quantity += clothes.getQuantity();
+
+                }
             }
         }
 
         return quantity;
     }
-
 
     public static int checkQuantity(Clothes socks, Map<Integer, Clothes> map) throws QuantityException {
         int key = 0;
@@ -168,9 +212,6 @@ public class StorageServiceImpl implements StorageService {
 
         return newQuantity;
     }
-
-
-
 
 
 }

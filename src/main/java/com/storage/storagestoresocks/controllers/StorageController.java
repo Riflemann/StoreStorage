@@ -2,7 +2,6 @@ package com.storage.storagestoresocks.controllers;
 
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
-import com.storage.storagestoresocks.models.clothes.Socks;
 import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.services.StorageService;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +34,13 @@ public class StorageController {
     }
 
     @GetMapping("/quantity")
-
-    public ResponseEntity<Integer> obtainQuantity(Color color,
-                                                  Size size,
+    public ResponseEntity<Integer> obtainQuantity(@RequestParam(required = false) Color color,
+                                                  @RequestParam(required = false) Size size,
+                                                  @RequestParam(required = false) TypeClothes typeClothes,
                                                   int cottonMin,
                                                   int cottonMax) {
 
-        int quantity = storageService.availabilityCheck(color, size, cottonMin, cottonMax);
+        int quantity = storageService.availabilityCheck(color, size, typeClothes, cottonMin, cottonMax);
 
         return ResponseEntity.ok(quantity);
     }
