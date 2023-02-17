@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -75,6 +72,11 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public List<Socks> obtainAllSocks() {
         return new ArrayList<>(storage.values());
+    }
+
+    @Override
+    public Map<Integer, Socks> obtainMapAllSocks() {
+        return storage;
     }
 
     @Override
@@ -166,26 +168,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
 
-    public Path createTxtFile() throws IOException {
-        Path storageTxt = fileService.createTempFile("Storage");
-        for (Socks sock : storage.values()) {
-            Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8);
 
-            writer
-                    .append("На складе в данный момент: \n")
-                    .append("Носки\n")
-                    .append("Размер: \n")
-                    .append(String.valueOf(sock.getSize()))
-                    .append("Цвет: \n")
-                    .append(String.valueOf(sock.getColor()))
-                    .append("Содержание хлопка: \n")
-                    .append(String.valueOf(sock.getCotton()))
-                    .append("Количество: \n")
-                    .append(String.valueOf(sock.getQuantity()))
-                    .append("\n");
-        }
-        return storageTxt;
-    }
 
 
 }

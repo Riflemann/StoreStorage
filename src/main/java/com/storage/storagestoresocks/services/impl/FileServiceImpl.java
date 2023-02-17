@@ -1,11 +1,14 @@
 package com.storage.storagestoresocks.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.storage.storagestoresocks.models.Socks;
 import com.storage.storagestoresocks.services.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -63,4 +66,31 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Path createTxtFile(Map<Integer, Socks> storage) throws IOException {
+        Path storageTxt = createTempFile("Storage");
+
+        try (Writer writer = Files.newBufferedWriter(storageTxt, StandardCharsets.UTF_8)) {
+            writer.append("На складе в данный момент: \n")
+                    .append("Носки\n");
+            for (Socks sock : storage.values()) {
+                writer
+                        .append("Размер: \n")
+                        .append(String.valueOf(sock.getSize()))
+                        .append("\n")
+                        .append("Цвет: \n")
+                        .append(String.valueOf(sock.getColor()))
+                        .append("\n")
+                        .append("Содержание хлопка: \n")
+                        .append(String.valueOf(sock.getCotton()))
+                        .append("\n")
+                        .append("Количество: \n")
+                        .append(String.valueOf(sock.getQuantity()))
+                        .append("\n");
+            }
+        }
+        return storageTxt;
+    }
+
 }
