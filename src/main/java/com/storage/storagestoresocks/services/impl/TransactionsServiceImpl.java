@@ -104,34 +104,68 @@ public class TransactionsServiceImpl implements TransactionsService {
             }
         }
 
-        Transaction transactionTemp = new Transaction();
-        transactionTemp.setSize(size);
-        transactionTemp.setColor(color);
-        transactionTemp.setTypeClothes(typeClothes);
-        System.out.println("проверка объекта в TransactionsServiceImpl.availabilityCheck " + transactionTemp);
+        if (color == null && size == null && typeClothes == null) {
 
-        for (Transaction transaction : clothesArrayList) {
-            if (transaction.equals(transactionTemp)) {
+            for (Transaction transaction : clothesArrayList) {
+
                 quantity += transaction.getClothesQuantity();
+/*
+* todo реализовать передачу коллекции в тело ответа
+* */
+
             }
-        }
+        } else if (size == null) {
+            for (Transaction transaction : clothesArrayList) {
+                if (transaction.getColor() == color &&
+                        transaction.getTypeClothes() == typeClothes &&
+                        transaction.getCotton() > cottonMin &&
+                        transaction.getCotton() < cottonMax) {
 
-            return quantity;
-        }
+                    quantity += transaction.getClothesQuantity();
 
-        private void readFromFile () {
-            try {
-                if (Files.exists(Path.of(filePath, fileTransactionName))) {
-                    String json = fileService.readFile(fileTransactionName);
-                    transactionsMap = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Transaction>>() {
-                    });
-                } else {
-                    throw new FileNotFoundException();
                 }
-            } catch (JsonProcessingException | FileNotFoundException e) {
-                e.printStackTrace();
+            }
+        } else if (typeClothes == null) {
+            for (Transaction transaction : clothesArrayList) {
+                if (transaction.getColor() == color &&
+                        transaction.getSize() == size &&
+                        transaction.getCotton() > cottonMin &&
+                        transaction.getCotton() < cottonMax) {
+
+                    quantity += transaction.getClothesQuantity();
+
+                }
+            }
+        } else {
+            for (Transaction transaction : clothesArrayList) {
+                if (transaction.getColor() == color &&
+                        transaction.getSize() == size &&
+                        transaction.getTypeClothes() == typeClothes &&
+                        transaction.getCotton() > cottonMin &&
+                        transaction.getCotton() < cottonMax) {
+
+                    quantity += transaction.getClothesQuantity();
+
+                }
             }
         }
 
+        return quantity;
     }
+
+    private void readFromFile() {
+        try {
+            if (Files.exists(Path.of(filePath, fileTransactionName))) {
+                String json = fileService.readFile(fileTransactionName);
+                transactionsMap = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Transaction>>() {
+                });
+            } else {
+                throw new FileNotFoundException();
+            }
+        } catch (JsonProcessingException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
 
