@@ -85,6 +85,7 @@ public class TransactionsServiceImpl implements TransactionsService {
         LocalDateTime lDTFromDate;
         LocalDateTime lDTToDate;
         ArrayList<Transaction> clothesArrayList = new ArrayList<>();
+
         if (fromDate != null && toDate != null) {
             lDTFromDate = LocalDate.parse(fromDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
             lDTToDate = LocalDate.parse(toDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
@@ -97,61 +98,57 @@ public class TransactionsServiceImpl implements TransactionsService {
             LocalDateTime lDTTransaction = LocalDate.parse(transaction.getCreateTime(), StorageServiceImpl.FORMAT_DATE).atTime(12, 0);
             if (lDTTransaction.isAfter(lDTFromDate) &&
                     lDTTransaction.isBefore(lDTToDate) &&
-                    transaction.getCotton() < cottonMax &&
-                    transaction.getCotton() > cottonMin) {
+                    transaction.getCotton() <= cottonMax &&
+                    transaction.getCotton() >= cottonMin) {
 
                 clothesArrayList.add(transaction);
             }
         }
-
-        if (color == null && size == null && typeClothes == null) {
-
-            for (Transaction transaction : clothesArrayList) {
-
+        for (Transaction transaction : clothesArrayList) {
+            if (color == null && size == null && typeClothes == null) {
                 quantity += transaction.getClothesQuantity();
-/*
-* todo реализовать передачу коллекции в тело ответа
-* */
 
-            }
-        } else if (size == null) {
-            for (Transaction transaction : clothesArrayList) {
+            } else if (size == null) {
                 if (transaction.getColor() == color &&
                         transaction.getTypeClothes() == typeClothes &&
-                        transaction.getCotton() > cottonMin &&
-                        transaction.getCotton() < cottonMax) {
+                        transaction.getCotton() >= cottonMin &&
+                        transaction.getCotton() <= cottonMax) {
 
                     quantity += transaction.getClothesQuantity();
 
+
                 }
-            }
-        } else if (typeClothes == null) {
-            for (Transaction transaction : clothesArrayList) {
+            } else if (typeClothes == null) {
                 if (transaction.getColor() == color &&
                         transaction.getSize() == size &&
-                        transaction.getCotton() > cottonMin &&
-                        transaction.getCotton() < cottonMax) {
+                        transaction.getCotton() >= cottonMin &&
+                        transaction.getCotton() <= cottonMax) {
 
                     quantity += transaction.getClothesQuantity();
 
+
                 }
-            }
-        } else {
-            for (Transaction transaction : clothesArrayList) {
+            } else {
+
                 if (transaction.getColor() == color &&
                         transaction.getSize() == size &&
                         transaction.getTypeClothes() == typeClothes &&
-                        transaction.getCotton() > cottonMin &&
-                        transaction.getCotton() < cottonMax) {
+                        transaction.getCotton() >= cottonMin &&
+                        transaction.getCotton() <= cottonMax) {
 
                     quantity += transaction.getClothesQuantity();
 
                 }
+
             }
+            /*
+             * todo реализовать передачу коллекции в тело ответа
+             * */
+
         }
-
         return quantity;
     }
+
 
     private void readFromFile() {
         try {
@@ -166,6 +163,5 @@ public class TransactionsServiceImpl implements TransactionsService {
             e.printStackTrace();
         }
     }
-
 }
 
