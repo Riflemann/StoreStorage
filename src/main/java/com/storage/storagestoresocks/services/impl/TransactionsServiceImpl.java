@@ -36,6 +36,7 @@ public class TransactionsServiceImpl implements TransactionsService {
     int counter;
 
     Map<Integer, Transaction> transactionsMap = new HashMap<>();
+    ArrayList<Transaction> transactionArrayList = new ArrayList<>();
 
     @PostConstruct
     private void init() {
@@ -73,18 +74,22 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public int availabilityCheck(@RequestParam(required = false) Color color,
-                                 @RequestParam(required = false) Size size,
-                                 @RequestParam(required = false) TypeClothes typeClothes,
-                                 @RequestParam(required = false) String fromDate,
-                                 @RequestParam(required = false) String toDate,
-                                 int cottonMin,
-                                 int cottonMax) {
+    public void extractList(@RequestParam(required = false) Color color,
+                            @RequestParam(required = false) Size size,
+                            @RequestParam(required = false) TypeClothes typeClothes,
+                            @RequestParam(required = false) String fromDate,
+                            @RequestParam(required = false) String toDate,
+                            int cottonMin,
+                            int cottonMax) {
 
-        int quantity = 0;
+        transactionArrayList.clear();
         LocalDateTime lDTFromDate;
         LocalDateTime lDTToDate;
-        ArrayList<Transaction> clothesArrayList = new ArrayList<>();
+
+
+        if (cottonMax == 0) {
+            cottonMax = 100;
+        }
 
         if (fromDate != null && toDate != null) {
             lDTFromDate = LocalDate.parse(fromDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
@@ -101,50 +106,40 @@ public class TransactionsServiceImpl implements TransactionsService {
                     transaction.getCotton() <= cottonMax &&
                     transaction.getCotton() >= cottonMin) {
 
-                clothesArrayList.add(transaction);
+                transactionArrayList.add(transaction);
             }
         }
-        for (Transaction transaction : clothesArrayList) {
+    }
+
+    @Override
+    public int calculateQuantity(@RequestParam(required = false) Color color,
+                                 @RequestParam(required = false) Size size,
+                                 @RequestParam(required = false) TypeClothes typeClothes) {
+        int quantity = 0;
+        for (Transaction transaction : transactionArrayList) {
+
             if (color == null && size == null && typeClothes == null) {
+
                 quantity += transaction.getClothesQuantity();
 
-            } else if (size == null) {
-                if (transaction.getColor() == color &&
-                        transaction.getTypeClothes() == typeClothes &&
-                        transaction.getCotton() >= cottonMin &&
-                        transaction.getCotton() <= cottonMax) {
+            } else if (size == null &&
+                    transaction.getColor() == color &&
+                    transaction.getTypeClothes() == typeClothes) {
 
-                    quantity += transaction.getClothesQuantity();
+                quantity += transaction.getClothesQuantity();
 
+            } else if (typeClothes == null &&
+                    transaction.getColor() == color &&
+                    transaction.getSize() == size) {
 
-                }
-            } else if (typeClothes == null) {
-                if (transaction.getColor() == color &&
-                        transaction.getSize() == size &&
-                        transaction.getCotton() >= cottonMin &&
-                        transaction.getCotton() <= cottonMax) {
+                quantity += transaction.getClothesQuantity();
 
-                    quantity += transaction.getClothesQuantity();
+            } else if (transaction.getColor() == color &&
+                    transaction.getSize() == size &&
+                    transaction.getTypeClothes() == typeClothes) {
 
-
-                }
-            } else {
-
-                if (transaction.getColor() == color &&
-                        transaction.getSize() == size &&
-                        transaction.getTypeClothes() == typeClothes &&
-                        transaction.getCotton() >= cottonMin &&
-                        transaction.getCotton() <= cottonMax) {
-
-                    quantity += transaction.getClothesQuantity();
-
-                }
-
+                quantity += transaction.getClothesQuantity();
             }
-            /*
-             * todo реализовать передачу коллекции в тело ответа
-             * */
-
         }
         return quantity;
     }

@@ -15,11 +15,15 @@ public interface TransactionsService {
 
     List<Transaction> getAllTransactions();
 
-    int availabilityCheck(@RequestParam(required = false) Color color,
+    void extractList(@RequestParam(required = false) Color color,
+                     @RequestParam(required = false) Size size,
+                     @RequestParam(required = false) TypeClothes typeClothes,
+                     @RequestParam(required = false) String fromDate,
+                     @RequestParam(required = false) String toDate,
+                     int cottonMin,
+                     int cottonMax);
+
+    int calculateQuantity(@RequestParam(required = false) Color color,
                           @RequestParam(required = false) Size size,
-                          @RequestParam(required = false) TypeClothes typeClothes,
-                          @RequestParam(required = false) String fromDate,
-                          @RequestParam(required = false) String toDate,
-                          int cottonMin,
-                          int cottonMax);
+                          @RequestParam(required = false) TypeClothes typeClothes);
 }

@@ -37,7 +37,8 @@ public class TransactionsController {
                                                   int cottonMin,
                                                   int cottonMax) {
 
-        int quantity = transactionsService.availabilityCheck(color, size, typeClothes, fromDate, toDate, cottonMin, cottonMax);
+        transactionsService.extractList(color, size, typeClothes, fromDate, toDate, cottonMin, cottonMax);
+        int quantity = transactionsService.calculateQuantity(color, size, typeClothes);
 
         return ResponseEntity.ok(quantity);
     }
