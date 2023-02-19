@@ -149,9 +149,9 @@ public class StorageServiceImpl implements StorageService {
                 storage = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Socks>>() {
                 });
             } else {
-                throw new FileNotFoundException();
+                System.out.println("Отсутсвует инициирующий фаил Storage2.json");
             }
-        } catch (JsonProcessingException | FileNotFoundException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }

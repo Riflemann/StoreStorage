@@ -76,9 +76,9 @@ public class TransactionsServiceImpl implements TransactionsService {
                 transactionsMap = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Transaction>>() {
                 });
             } else {
-                throw new FileNotFoundException();
+                System.out.println("Отсутсвует инициирующий фаил Transaction2.json");
             }
-        } catch (JsonProcessingException | FileNotFoundException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
