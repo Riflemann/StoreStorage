@@ -5,6 +5,7 @@ import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.util.List;

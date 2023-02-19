@@ -20,4 +20,7 @@ public class Clothes {
     int cotton;
 
     int quantity;
+
+    public Clothes(TypeClothes typeClothes, Size size, Color color, Object o, Object o1) {
+    }
 }

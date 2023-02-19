@@ -5,6 +5,7 @@ import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -13,4 +14,12 @@ public interface TransactionsService {
                          int socksQuantity, Size size, int cotton, Color color);
 
     List<Transaction> getAllTransactions();
+
+    int availabilityCheck(@RequestParam(required = false) Color color,
+                          @RequestParam(required = false) Size size,
+                          @RequestParam(required = false) TypeClothes typeClothes,
+                          @RequestParam(required = false) String fromDate,
+                          @RequestParam(required = false) String toDate,
+                          int cottonMin,
+                          int cottonMax);
 }

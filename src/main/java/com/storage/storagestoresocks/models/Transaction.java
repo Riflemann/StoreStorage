@@ -16,7 +16,7 @@ public class Transaction {
 
     String createTime;
 
-    int socksQuantity;
+    int clothesQuantity;
 
     Size size;
 
@@ -38,9 +38,11 @@ public class Transaction {
         this.iD = transactionBuilder.iD;
         this.createTime = transactionBuilder.createTime;
         this.size = transactionBuilder.size;
-        this.socksQuantity = transactionBuilder.socksQuantity;
+        this.clothesQuantity = transactionBuilder.socksQuantity;
         this.color = transactionBuilder.color;
     }
+
+
 
     public static class TransactionBuilder {
 
@@ -74,6 +76,7 @@ public class Transaction {
             this.typeClothes = typeClothes;
             return this;
         }
+
         public TransactionBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime.format(FORMAT_DATE);
             return this;

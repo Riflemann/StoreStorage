@@ -20,6 +20,9 @@ import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +30,8 @@ import java.util.Map;
 
 @Service
 public class StorageServiceImpl implements StorageService {
+
+    final static DateTimeFormatter FORMAT_DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     private final TransactionsService transactionsService;
 
@@ -119,6 +124,9 @@ public class StorageServiceImpl implements StorageService {
                                  int cottonMin,
                                  int cottonMax) {
         int quantity = 0;
+
+        ArrayList<Clothes> clothesArrayList = new ArrayList<>();
+
 
         if (color == null) {
             for (Clothes clothes : storage.values()) {
