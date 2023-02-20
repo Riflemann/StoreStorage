@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class StorageServiceImpl implements StorageService {
     Map<Integer, Socks> storage = new HashMap<>();
 
     @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
         readFromFile();
         counter = storage.size();
     }

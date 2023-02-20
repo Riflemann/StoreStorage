@@ -5,9 +5,13 @@ import com.storage.storagestoresocks.models.enums.Color;
 import com.storage.storagestoresocks.models.enums.Size;
 import com.storage.storagestoresocks.models.enums.TypeTransaction;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 public interface TransactionsService {
+    @PostConstruct
+    void init();
+
     void addTransactions(TypeTransaction typeTransaction,
                          int socksQuantity,
                          Size size,

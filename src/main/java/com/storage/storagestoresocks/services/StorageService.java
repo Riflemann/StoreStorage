@@ -5,10 +5,14 @@ import com.storage.storagestoresocks.models.Socks;
 import com.storage.storagestoresocks.models.enums.Color;
 import com.storage.storagestoresocks.models.enums.Size;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
 public interface StorageService {
+    @PostConstruct
+    void init();
+
     void addSocksInStorage(Socks socks) throws QuantityException;
 
     abstract List<Socks> obtainAllSocks();

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -36,7 +35,8 @@ public class TransactionsServiceImpl implements TransactionsService {
     Map<Integer, Transaction> transactionsMap = new HashMap<>();
 
     @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
         readFromFile();
         counter = transactionsMap.size();
     }

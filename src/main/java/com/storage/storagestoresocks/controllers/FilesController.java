@@ -79,9 +79,11 @@ public class FilesController {
         fileService.cleanFile(storageFileName);
         File storageFile = new File(filePath + "/" + storageFileName);
 
-        try(FileOutputStream fos = new FileOutputStream(storageFile)) {
+        try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
+            storageService.init();
+
             return ResponseEntity.ok().build();
 
         } catch (IOException e) {
@@ -95,9 +97,10 @@ public class FilesController {
         fileService.cleanFile(transactionFileName);
         File storageFile = new File(filePath + "/" + transactionFileName);
 
-        try(FileOutputStream fos = new FileOutputStream(storageFile)) {
+        try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
+            transactionsService.init();
             return ResponseEntity.ok().build();
 
         } catch (IOException e) {
