@@ -74,10 +74,7 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public void extractList(@RequestParam(required = false) Color color,
-                            @RequestParam(required = false) Size size,
-                            @RequestParam(required = false) TypeClothes typeClothes,
-                            @RequestParam(required = false) String fromDate,
+    public List<Transaction> extractList(@RequestParam(required = false) String fromDate,
                             @RequestParam(required = false) String toDate,
                             int cottonMin,
                             int cottonMax) {
@@ -109,6 +106,7 @@ public class TransactionsServiceImpl implements TransactionsService {
                 transactionArrayList.add(transaction);
             }
         }
+        return transactionArrayList;
     }
 
     @Override

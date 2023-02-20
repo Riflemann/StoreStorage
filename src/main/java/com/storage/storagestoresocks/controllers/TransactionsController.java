@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class TransactionsController {
     }
 
     @GetMapping("/quantity")
-    public ResponseEntity<Integer> obtainQuantity(@RequestParam(required = false) Color color,
+    public ResponseEntity<String> obtainQuantity(@RequestParam(required = false) Color color,
                                                   @RequestParam(required = false) Size size,
                                                   @RequestParam(required = false) TypeClothes typeClothes,
                                                   @RequestParam(required = false) String fromDate,
@@ -37,10 +38,10 @@ public class TransactionsController {
                                                   int cottonMin,
                                                   int cottonMax) {
 
-        transactionsService.extractList(color, size, typeClothes, fromDate, toDate, cottonMin, cottonMax);
+        List<Transaction> transactions = new ArrayList<>(transactionsService.extractList(fromDate, toDate, cottonMin, cottonMax));
         int quantity = transactionsService.calculateQuantity(color, size, typeClothes);
 
-        return ResponseEntity.ok(quantity);
+        return ResponseEntity.ok().body("На складе найдено: " + quantity + "шт.\n" + transactions);
     }
 
 

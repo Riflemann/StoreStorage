@@ -15,10 +15,7 @@ public interface TransactionsService {
 
     List<Transaction> getAllTransactions();
 
-    void extractList(@RequestParam(required = false) Color color,
-                     @RequestParam(required = false) Size size,
-                     @RequestParam(required = false) TypeClothes typeClothes,
-                     @RequestParam(required = false) String fromDate,
+    List<Transaction> extractList(@RequestParam(required = false) String fromDate,
                      @RequestParam(required = false) String toDate,
                      int cottonMin,
                      int cottonMax);
