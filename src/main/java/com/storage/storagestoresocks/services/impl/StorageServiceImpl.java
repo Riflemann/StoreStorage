@@ -117,11 +117,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public int availabilityCheck(@RequestParam(required = false) Color color,
-                                 @RequestParam(required = false) Size size,
-                                 @RequestParam(required = false) TypeClothes typeClothes,
-                                 int cottonMin,
-                                 int cottonMax) {
+    public int availabilityCheck(Color color, Size size, TypeClothes typeClothes, int cottonMin, int cottonMax) {
         int quantity = 0;
         List<Clothes> clothesArrayList = new ArrayList<>();
 
@@ -241,11 +237,8 @@ public class StorageServiceImpl implements StorageService {
 
         }
 
-        for (Clothes clothes : clothesArrayList) {
-            quantity += clothes.getQuantity();
-        }
+        return clothesArrayList.stream().map(Clothes::getQuantity).mapToInt(Integer::valueOf).sum();
 
-        return quantity;
     }
 
     public static int checkQuantity(Clothes clothes, Map<Integer, Clothes> map) throws QuantityException {
