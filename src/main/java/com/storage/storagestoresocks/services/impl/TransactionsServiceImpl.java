@@ -60,7 +60,7 @@ public class TransactionsServiceImpl implements TransactionsService {
                 cotton(cotton).
                 size(size).
                 color(color).
-                socksQuantity(socksQuantity).
+                clothesQuantity(socksQuantity).
                 build());
 
         fileService.saveToFile(fileTransactionName, transactionsMap);

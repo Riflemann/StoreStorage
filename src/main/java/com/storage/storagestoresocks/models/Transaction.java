@@ -30,7 +30,7 @@ public class Transaction {
         if (transactionBuilder == null) {
             throw new IllegalArgumentException("Please provide Transaction builder to build Transaction object.");
         }
-        if (transactionBuilder.socksQuantity <= 0) {
+        if (transactionBuilder.clothesQuantity <= 0) {
             throw new IllegalArgumentException("Please provide valid socks number.");
         }
         this.typeTransaction = transactionBuilder.typeTransaction;
@@ -38,7 +38,7 @@ public class Transaction {
         this.iD = transactionBuilder.iD;
         this.createTime = transactionBuilder.createTime;
         this.size = transactionBuilder.size;
-        this.clothesQuantity = transactionBuilder.socksQuantity;
+        this.clothesQuantity = transactionBuilder.clothesQuantity;
         this.color = transactionBuilder.color;
     }
 
@@ -53,7 +53,7 @@ public class Transaction {
 
         private String createTime;
 
-        private int socksQuantity;
+        private int clothesQuantity;
 
         private Size size;
 
@@ -82,8 +82,8 @@ public class Transaction {
             return this;
         }
 
-        public TransactionBuilder socksQuantity(int socksQuantity) {
-            this.socksQuantity = socksQuantity;
+        public TransactionBuilder clothesQuantity(int clothesQuantity) {
+            this.clothesQuantity = clothesQuantity;
             return this;
         }
 

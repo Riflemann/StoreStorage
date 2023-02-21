@@ -120,124 +120,133 @@ public class StorageServiceImpl implements StorageService {
     public int availabilityCheck(Color color, Size size, TypeClothes typeClothes, int cottonMin, int cottonMax) {
         int quantity = 0;
         List<Clothes> clothesArrayList = new ArrayList<>();
+        return storage.values().stream()
+                .filter(clothes ->
+                        (color == null || color == clothes.getColor())
+                                && (size == null || size == clothes.getSize())
+                                && (typeClothes == null || typeClothes == clothes.getTypeClothes())
+                                && clothes.getCotton() > cottonMin
+                                && clothes.getCotton() < cottonMax)
+                .map(Clothes::getQuantity)
+                .mapToInt(Integer::valueOf)
+                .sum();
 
-
-        if (color == null &&
-                size == null &&
-                typeClothes == null) {
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (color == null &&
-                size == null) {
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getTypeClothes() == typeClothes &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (typeClothes == null &&
-                size == null) {
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getColor() == color &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (color == null &&
-                typeClothes == null) {
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getSize() == size &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (color == null) {
-//            for (Clothes clothes : storage.values()) {
-//                if (clothes.getSize() == size &&
-//                        clothes.getTypeClothes() == typeClothes &&
-//                        clothes.getCotton() > cottonMin &&
-//                        clothes.getCotton() < cottonMax) {
+//        if (color == null &&
+//                size == null &&
+//                typeClothes == null) {
 //
-//                    quantity += clothes.getQuantity();
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
 //
-//                }
-//            }
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getSize() == size &&
-                            e.getTypeClothes() == typeClothes &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (size == null) {
-//            for (Clothes clothes : storage.values()) {
-//                if (clothes.getColor() == color &&
-//                        clothes.getTypeClothes() == typeClothes &&
-//                        clothes.getCotton() > cottonMin &&
-//                        clothes.getCotton() < cottonMax) {
+//        } else if (color == null &&
+//                size == null) {
 //
-//                    quantity += clothes.getQuantity();
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getTypeClothes() == typeClothes &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
 //
-//                }
-//            }
-
-            clothesArrayList = storage.values().
-                    stream()
-                    .filter(e -> e.getColor() == color &&
-                            e.getTypeClothes() == typeClothes &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else if (typeClothes == null) {
-//            for (Clothes clothes : storage.values()) {
-//                if (clothes.getColor() == color &&
-//                        clothes.getSize() == size &&
-//                        clothes.getCotton() > cottonMin &&
-//                        clothes.getCotton() < cottonMax) {
+//        } else if (typeClothes == null &&
+//                size == null) {
 //
-//                    quantity += clothes.getQuantity();
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getColor() == color &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
 //
-//                }
-//            }
-
-            clothesArrayList = storage.values()
-                    .stream()
-                    .filter(e -> e.getSize() == size &&
-                            e.getColor() == color &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        } else {
-//            for (Clothes clothes : storage.values()) {
-//                if (clothes.getColor() == color &&
-//                        clothes.getSize() == size &&
-//                        clothes.getTypeClothes() == typeClothes &&
-//                        clothes.getCotton() > cottonMin &&
-//                        clothes.getCotton() < cottonMax) {
+//        } else if (color == null &&
+//                typeClothes == null) {
 //
-//                    quantity += clothes.getQuantity();
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getSize() == size &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
 //
-//                }
-//            }
-
-            clothesArrayList = storage.values().stream()
-                    .filter(e -> e.getColor() == color &&
-                            e.getSize() == size &&
-                            e.getTypeClothes() == typeClothes &&
-                            e.getCotton() > cottonMin &&
-                            e.getCotton() < cottonMax).collect(Collectors.toList());
-
-        }
-
-        return clothesArrayList.stream().map(Clothes::getQuantity).mapToInt(Integer::valueOf).sum();
+//        } else if (color == null) {
+////            for (Clothes clothes : storage.values()) {
+////                if (clothes.getSize() == size &&
+////                        clothes.getTypeClothes() == typeClothes &&
+////                        clothes.getCotton() > cottonMin &&
+////                        clothes.getCotton() < cottonMax) {
+////
+////                    quantity += clothes.getQuantity();
+////
+////                }
+////            }
+//
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getSize() == size &&
+//                            e.getTypeClothes() == typeClothes &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
+//
+//        } else if (size == null) {
+////            for (Clothes clothes : storage.values()) {
+////                if (clothes.getColor() == color &&
+////                        clothes.getTypeClothes() == typeClothes &&
+////                        clothes.getCotton() > cottonMin &&
+////                        clothes.getCotton() < cottonMax) {
+////
+////                    quantity += clothes.getQuantity();
+////
+////                }
+////            }
+//
+//            clothesArrayList = storage.values().
+//                    stream()
+//                    .filter(e -> e.getColor() == color &&
+//                            e.getTypeClothes() == typeClothes &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
+//
+//        } else if (typeClothes == null) {
+////            for (Clothes clothes : storage.values()) {
+////                if (clothes.getColor() == color &&
+////                        clothes.getSize() == size &&
+////                        clothes.getCotton() > cottonMin &&
+////                        clothes.getCotton() < cottonMax) {
+////
+////                    quantity += clothes.getQuantity();
+////
+////                }
+////            }
+//
+//            clothesArrayList = storage.values()
+//                    .stream()
+//                    .filter(e -> e.getSize() == size &&
+//                            e.getColor() == color &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
+//
+//        } else {
+////            for (Clothes clothes : storage.values()) {
+////                if (clothes.getColor() == color &&
+////                        clothes.getSize() == size &&
+////                        clothes.getTypeClothes() == typeClothes &&
+////                        clothes.getCotton() > cottonMin &&
+////                        clothes.getCotton() < cottonMax) {
+////
+////                    quantity += clothes.getQuantity();
+////
+////                }
+////            }
+//
+//            clothesArrayList = storage.values().stream()
+//                    .filter(e -> e.getColor() == color &&
+//                            e.getSize() == size &&
+//                            e.getTypeClothes() == typeClothes &&
+//                            e.getCotton() > cottonMin &&
+//                            e.getCotton() < cottonMax).collect(Collectors.toList());
+//
+//        }
+//
+//        return clothesArrayList.stream().map(Clothes::getQuantity).mapToInt(Integer::valueOf).sum();
 
     }
 
