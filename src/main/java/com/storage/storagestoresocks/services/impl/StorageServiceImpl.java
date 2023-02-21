@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.PostConstruct;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,8 +122,6 @@ public class StorageServiceImpl implements StorageService {
                                  int cottonMin,
                                  int cottonMax) {
         int quantity = 0;
-
-        ArrayList<Clothes> clothesArrayList = new ArrayList<>();
 
 
         if (color == null) {

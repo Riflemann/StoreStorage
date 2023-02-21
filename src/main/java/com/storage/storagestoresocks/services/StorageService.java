@@ -16,7 +16,8 @@ public interface StorageService {
     @PostConstruct
     void init();
 
-    void addSocksInStorage(Socks socks) throws QuantityException;
+
+    void addClothesInStorage(Clothes clothes) throws QuantityException;
 
     List<Clothes> obtainAllClothes();
 
