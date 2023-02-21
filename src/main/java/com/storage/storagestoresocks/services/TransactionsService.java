@@ -7,9 +7,14 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 public interface TransactionsService {
+    @PostConstruct
+    void init();
+
+
     void addTransactions(TypeTransaction typeTransaction, TypeClothes typeClothes,
                          int socksQuantity, Size size, int cotton, Color color);
 

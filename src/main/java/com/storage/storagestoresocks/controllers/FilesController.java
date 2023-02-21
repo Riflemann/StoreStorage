@@ -82,6 +82,8 @@ public class FilesController {
         try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
+            storageService.init();
+
             return ResponseEntity.ok().build();
 
         } catch (IOException e) {
@@ -98,6 +100,7 @@ public class FilesController {
         try (FileOutputStream fos = new FileOutputStream(storageFile)) {
 
             IOUtils.copy(file.getInputStream(), fos);
+            transactionsService.init();
             return ResponseEntity.ok().build();
 
         } catch (IOException e) {

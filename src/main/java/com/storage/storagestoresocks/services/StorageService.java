@@ -8,11 +8,15 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
 public interface StorageService {
-    void addClothesInStorage(Clothes clothes) throws QuantityException;
+    @PostConstruct
+    void init();
+
+    void addSocksInStorage(Socks socks) throws QuantityException;
 
     List<Clothes> obtainAllClothes();
 

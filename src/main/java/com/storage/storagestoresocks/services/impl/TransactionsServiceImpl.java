@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -39,7 +38,8 @@ public class TransactionsServiceImpl implements TransactionsService {
     ArrayList<Transaction> transactionArrayList = new ArrayList<>();
 
     @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
         readFromFile();
         counter = transactionsMap.size();
     }
@@ -150,9 +150,9 @@ public class TransactionsServiceImpl implements TransactionsService {
                 transactionsMap = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Transaction>>() {
                 });
             } else {
-                throw new FileNotFoundException();
+                System.out.println("Отсутсвует инициирующий фаил Transaction2.json");
             }
-        } catch (JsonProcessingException | FileNotFoundException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }

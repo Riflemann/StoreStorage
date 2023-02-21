@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -48,7 +47,8 @@ public class StorageServiceImpl implements StorageService {
     Map<Integer, Clothes> storage = new HashMap<>();
 
     @PostConstruct
-    private void init() {
+    @Override
+    public void init() {
         readFromFile();
         counter = storage.size();
     }
@@ -203,9 +203,9 @@ public class StorageServiceImpl implements StorageService {
                 storage = new ObjectMapper().readValue(json, new TypeReference<HashMap<Integer, Clothes>>() {
                 });
             } else {
-                throw new FileNotFoundException();
+                System.out.println("Отсутсвует инициирующий фаил Storage2.json");
             }
-        } catch (JsonProcessingException | FileNotFoundException e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
