@@ -126,7 +126,43 @@ public class StorageServiceImpl implements StorageService {
         List<Clothes> clothesArrayList = new ArrayList<>();
 
 
-        if (color == null) {
+        if (color == null &&
+                size == null &&
+                typeClothes == null) {
+
+            clothesArrayList = storage.values()
+                    .stream()
+                    .filter(e -> e.getCotton() > cottonMin &&
+                            e.getCotton() < cottonMax).collect(Collectors.toList());
+
+        } else if (color == null &&
+                size == null) {
+
+            clothesArrayList = storage.values()
+                    .stream()
+                    .filter(e -> e.getTypeClothes() == typeClothes &&
+                            e.getCotton() > cottonMin &&
+                            e.getCotton() < cottonMax).collect(Collectors.toList());
+
+        } else if (typeClothes == null &&
+                size == null) {
+
+            clothesArrayList = storage.values()
+                    .stream()
+                    .filter(e -> e.getColor() == color &&
+                            e.getCotton() > cottonMin &&
+                            e.getCotton() < cottonMax).collect(Collectors.toList());
+
+        } else if (color == null &&
+                typeClothes == null) {
+
+            clothesArrayList = storage.values()
+                    .stream()
+                    .filter(e -> e.getSize() == size &&
+                            e.getCotton() > cottonMin &&
+                            e.getCotton() < cottonMax).collect(Collectors.toList());
+
+        } else if (color == null) {
 //            for (Clothes clothes : storage.values()) {
 //                if (clothes.getSize() == size &&
 //                        clothes.getTypeClothes() == typeClothes &&
