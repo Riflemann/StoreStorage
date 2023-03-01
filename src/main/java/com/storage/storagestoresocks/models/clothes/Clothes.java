@@ -2,12 +2,16 @@ package com.storage.storagestoresocks.models.clothes;
 
 import com.storage.storagestoresocks.models.clothes.enums.*;
 import lombok.*;
+import nonapi.io.github.classgraph.json.Id;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Positive;
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Clothes {
+
+    int id;
 
     TypeClothes typeClothes;
 
@@ -21,6 +25,11 @@ public class Clothes {
 
     int quantity;
 
-    public Clothes(TypeClothes typeClothes, Size size, Color color, Object o, Object o1) {
+    public Clothes(TypeClothes typeClothes, Size size, Color color, int cotton, int quantity) {
+        this.typeClothes = typeClothes;
+        this.size = size;
+        this.color = color;
+        this.cotton = cotton;
+        this.quantity = quantity;
     }
 }
