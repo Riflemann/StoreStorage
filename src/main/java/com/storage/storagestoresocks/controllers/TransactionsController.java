@@ -1,9 +1,11 @@
 package com.storage.storagestoresocks.controllers;
 
 import com.storage.storagestoresocks.models.Transaction;
+import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
+import com.storage.storagestoresocks.repository.TransactionsRepository;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,16 @@ public class TransactionsController {
 
     TransactionsService transactionsService;
 
-    public TransactionsController(TransactionsService transactionsService) {
+    TransactionsRepository transactionsRepository;
+
+    public TransactionsController(TransactionsService transactionsService, TransactionsRepository transactionsRepository) {
         this.transactionsService = transactionsService;
+        this.transactionsRepository = transactionsRepository;
+    }
+
+    @GetMapping("/from/h2")
+    public ResponseEntity<List<Transaction>> getAllFromH2() {
+        return ResponseEntity.ok(transactionsRepository.findAll());
     }
 
     @GetMapping("/allTransactions")
