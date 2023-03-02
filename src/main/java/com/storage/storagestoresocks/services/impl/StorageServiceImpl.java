@@ -60,7 +60,6 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public void addClothesInStorage(Clothes clothes) throws QuantityException {
         if (!storage.containsValue(clothes)) {
-            clothes.setId(counter);
             storage.put(counter++, clothes);
         } else {
             int key = checkQuantity(clothes, storage);

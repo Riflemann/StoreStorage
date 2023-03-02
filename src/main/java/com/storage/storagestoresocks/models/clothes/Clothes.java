@@ -11,8 +11,6 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 public class Clothes {
 
-    int id;
-
     TypeClothes typeClothes;
 
     Size size;
@@ -24,12 +22,4 @@ public class Clothes {
     int cotton;
 
     int quantity;
-
-    public Clothes(TypeClothes typeClothes, Size size, Color color, int cotton, int quantity) {
-        this.typeClothes = typeClothes;
-        this.size = size;
-        this.color = color;
-        this.cotton = cotton;
-        this.quantity = quantity;
-    }
 }
