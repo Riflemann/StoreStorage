@@ -9,8 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/storage")
@@ -52,9 +55,20 @@ public class StorageController {
     public ResponseEntity<Clothes> saveToH2(Clothes clothes) {
         return ResponseEntity.ok(storageRepository.save(clothes));
     }
-    @GetMapping("/update")
-    public ResponseEntity<Clothes> updateInH2(Clothes clothes) {
-        return ResponseEntity.ok(storageRepository.updateClothes(clothes));
+
+    @GetMapping("/batch_update_test")
+    public ResponseEntity<int[]> batchUpdateTest() {
+        List<Clothes> clothesList = new ArrayList<>();
+        clothesList.add(new Clothes(TypeClothes.SOCKS, Size.SIZE_M, Color.BLUE, 80, 10));
+        clothesList.add(new Clothes(TypeClothes.SOCKS, Size.SIZE_S, Color.BLUE, 70, 10));
+        return ResponseEntity.ok(storageRepository.batchUpdate(clothesList));
+    }
+
+
+    @GetMapping("/batch_update_not_work")
+    public ResponseEntity<int[]> batchUpdatezzz(@RequestBody Clothes... clothes) {
+        List<Clothes> clothesList = Arrays.stream(clothes).collect(Collectors.toList());
+        return ResponseEntity.ok(storageRepository.batchUpdate(clothesList));
     }
 
 

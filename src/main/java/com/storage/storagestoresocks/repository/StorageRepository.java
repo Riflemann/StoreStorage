@@ -13,4 +13,5 @@ public interface StorageRepository {
 
     Clothes save(Clothes clothes);
 
+    int[] batchUpdate(List<Clothes> clothes);
 }

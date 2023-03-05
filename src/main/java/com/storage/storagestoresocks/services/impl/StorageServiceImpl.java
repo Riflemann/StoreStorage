@@ -9,12 +9,12 @@ import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
+import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Files;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -34,6 +33,8 @@ public class StorageServiceImpl implements StorageService {
     private final TransactionsService transactionsService;
 
     private final FileService fileService;
+
+    private StorageRepository storageRepository;
 
     static int counter;
 
@@ -50,11 +51,13 @@ public class StorageServiceImpl implements StorageService {
     public void init() {
         readFromFile();
         counter = storage.size();
+        storage.values().forEach(e -> storageRepository.save(e));
     }
 
-    public StorageServiceImpl(TransactionsService transactionsService, FileService fileService) {
+    public StorageServiceImpl(TransactionsService transactionsService, FileService fileService, StorageRepository storageRepository) {
         this.transactionsService = transactionsService;
         this.fileService = fileService;
+        this.storageRepository = storageRepository;
     }
 
     @Override

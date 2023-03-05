@@ -9,10 +9,12 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.repository.TransactionsRepository;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -100,6 +102,36 @@ public class StorageRepositoryImpl implements StorageRepository {
             jdbcTemplate.update(sqlUpdate);
         }
         return clothes;
+    }
+
+    @Override
+    public int[] batchUpdate(final List<Clothes> clothes) {
+        final int[] idTr = {0};
+        SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
+        if (sqlRowSetForInsert.next()) {
+            idTr[0] = sqlRowSetForInsert.getInt("id")-1;
+        }
+        int[] updateCounts = jdbcTemplate.batchUpdate(
+                "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        idTr[0]++;
+                        ps.setInt(1, idTr[0]);
+                        ps.setString(2, clothes.get(i).getTypeClothes().toString());
+                        ps.setString(3, clothes.get(i).getSize().toString());
+                        ps.setString(4, clothes.get(i).getColor().toString());
+                        ps.setInt(5, clothes.get(i).getCotton());
+                        ps.setInt(6, clothes.get(i).getQuantity());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return clothes.size();
+                    }
+                }
+        );
+        return updateCounts;
     }
 
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
