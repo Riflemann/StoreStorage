@@ -102,23 +102,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         return clothes;
     }
 
-    @Override
-    public Clothes updateClothes(Clothes clothes) {
-
-
-//        String sql = "merge into CLOTHES_REP c " +
-//                "using (SELECT ? as type_Clothes,  ? as size, ? as color, ? as cotton, ? as quantity from dual) d " +
-//                "on (c.type_Clothes = d.type_Clothes, c.size = d.size, c.color = d.color, c.cotton = d.cotton) " +
-//                "when matched then update " +
-//                "set c.quantity = d.quantity " +
-//                "when not matched then insert (type_Clothes, size, color, cotton, quantity) " +
-//                "values(d.type_Clothes, d.size, d.color, d.quantity)";
-//
-//        jdbcTemplate.update(sql, type_Clothes, size, color, cotton, quantity);
-
-        return clothes;
-    }
-
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
             throws SQLException {
 

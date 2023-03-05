@@ -13,5 +13,4 @@ public interface StorageRepository {
 
     Clothes save(Clothes clothes);
 
-    Clothes updateClothes(Clothes clothes);
 }
