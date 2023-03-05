@@ -24,7 +24,7 @@ public class Transaction {
 
     Color color;
 
-    int iD;
+//    int iD;
 
     public Transaction(TransactionBuilder transactionBuilder) {
         if (transactionBuilder == null) {
@@ -35,11 +35,11 @@ public class Transaction {
         }
         this.typeTransaction = transactionBuilder.typeTransaction;
         this.typeClothes = transactionBuilder.typeClothes;
-        this.iD = transactionBuilder.iD;
+//        this.iD = transactionBuilder.iD;
         this.createTime = transactionBuilder.createTime;
-        this.size = transactionBuilder.size;
+//        this.size = transactionBuilder.size;
         this.clothesQuantity = transactionBuilder.clothesQuantity;
-        this.color = transactionBuilder.color;
+//        this.color = transactionBuilder.color;
     }
 
 
@@ -55,13 +55,13 @@ public class Transaction {
 
         private int clothesQuantity;
 
-        private Size size;
-
+//        private Size size;
+//
         private int cotton;
+//
+//        private Color color;
 
-        private Color color;
-
-        private int iD;
+//        private int iD;
 
         public TransactionBuilder() {
             super();
@@ -87,25 +87,25 @@ public class Transaction {
             return this;
         }
 
-        public TransactionBuilder iD(int iD) {
-            this.iD = iD;
-            return this;
-        }
-
-        public TransactionBuilder size(Size size) {
-            this.size = size;
-            return this;
-        }
-
+//        public TransactionBuilder iD(int iD) {
+//            this.iD = iD;
+//            return this;
+//        }
+//
+//        public TransactionBuilder size(Size size) {
+//            this.size = size;
+//            return this;
+//        }
+//
         public TransactionBuilder cotton(int cotton) {
             this.cotton = cotton;
             return this;
         }
-
-        public TransactionBuilder color(Color color) {
-            this.color = color;
-            return this;
-        }
+//
+//        public TransactionBuilder color(Color color) {
+//            this.color = color;
+//            return this;
+//        }
 
         public Transaction build() {
             return new Transaction(this);

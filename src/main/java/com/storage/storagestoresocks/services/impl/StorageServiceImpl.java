@@ -72,9 +72,9 @@ public class StorageServiceImpl implements StorageService {
                 TypeTransaction.INCOMING,
                 clothes.getTypeClothes(),
                 clothes.getQuantity(),
-                clothes.getSize(),
-                clothes.getCotton(),
-                clothes.getColor());
+                clothes.getCotton());
+//                clothes.getSize(),
+//                clothes.getColor());
 
     }
 
@@ -95,9 +95,9 @@ public class StorageServiceImpl implements StorageService {
                 TypeTransaction.OUTCOMING,
                 clothes.getTypeClothes(),
                 clothes.getQuantity(),
-                clothes.getSize(),
-                clothes.getCotton(),
-                clothes.getColor());
+//                clothes.getSize(),
+//                clothes.getColor());
+                clothes.getCotton());
 
         return changeQuantityInStorage(clothes);
     }
@@ -109,9 +109,9 @@ public class StorageServiceImpl implements StorageService {
                 TypeTransaction.DEPRECATED,
                 clothes.getTypeClothes(),
                 clothes.getQuantity(),
-                clothes.getSize(),
-                clothes.getCotton(),
-                clothes.getColor());
+                clothes.getCotton());
+//                clothes.getSize(),
+//                clothes.getColor());
 
         return changeQuantityInStorage(clothes);
     }

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,11 +48,10 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     @Override
     public Transaction save(Transaction transaction) {
         jdbcTemplate.update(
-                "insert into transactions_rep (id, typeTransaction,typeClothes,createTime, clothesQuantity) values( ?, ?, ?, ?, ?)",
-                transaction.getID(),
+                "insert into transactions_rep (typeTransaction,typeClothes,createTime, clothesQuantity) values(?, ?, ?, ?)",
                 transaction.getTypeTransaction().toString(),
                 transaction.getTypeClothes().toString(),
-                transaction.getCreateTime(),
+                Timestamp.valueOf(LocalDateTime.parse(transaction.getCreateTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))),
                 transaction.getClothesQuantity());
         return transaction;
     }

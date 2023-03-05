@@ -34,6 +34,11 @@ public class TransactionsController {
         return ResponseEntity.ok(transactionsRepository.findAll());
     }
 
+    @GetMapping("/save")
+    public ResponseEntity<Transaction> saveToH2(Transaction transaction) {
+        return ResponseEntity.ok(transactionsRepository.save(transaction));
+    }
+
     @GetMapping("/allTransactions")
     public ResponseEntity<List<Transaction>> getAllSocksList() {
         return ResponseEntity.ok().body(transactionsService.getAllTransactions());

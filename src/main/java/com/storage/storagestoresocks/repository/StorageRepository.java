@@ -12,4 +12,6 @@ public interface StorageRepository {
     Optional<Clothes> findById(String id);
 
     Clothes save(Clothes clothes);
+
+    Clothes updateClothes(Clothes clothes);
 }

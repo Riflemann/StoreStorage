@@ -52,6 +52,10 @@ public class StorageController {
     public ResponseEntity<Clothes> saveToH2(Clothes clothes) {
         return ResponseEntity.ok(storageRepository.save(clothes));
     }
+    @GetMapping("/update")
+    public ResponseEntity<Clothes> updateInH2(Clothes clothes) {
+        return ResponseEntity.ok(storageRepository.updateClothes(clothes));
+    }
 
 
     @GetMapping("/quantity")

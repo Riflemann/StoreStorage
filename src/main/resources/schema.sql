@@ -1,7 +1,7 @@
 
 create table if not exists transactions_rep
 (
-    id           integer PRIMARY KEY,
+    id           integer AUTO_INCREMENT PRIMARY KEY,
     typeTransaction varchar not null,
     typeClothes         varchar not null,
     createTime        timestamp not null,

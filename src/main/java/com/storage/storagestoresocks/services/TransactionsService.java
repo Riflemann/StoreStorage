@@ -16,7 +16,7 @@ public interface TransactionsService {
 
 
     void addTransactions(TypeTransaction typeTransaction, TypeClothes typeClothes,
-                         int socksQuantity, Size size, int cotton, Color color);
+                         int socksQuantity, int cotton);
 
     List<Transaction> getAllTransactions();
 

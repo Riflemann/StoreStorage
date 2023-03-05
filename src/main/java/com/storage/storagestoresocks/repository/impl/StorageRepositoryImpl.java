@@ -1,16 +1,21 @@
 package com.storage.storagestoresocks.repository.impl;
 
+import com.storage.storagestoresocks.models.Transaction;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
+import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.repository.StorageRepository;
+import com.storage.storagestoresocks.repository.TransactionsRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +23,11 @@ import java.util.Optional;
 public class StorageRepositoryImpl implements StorageRepository {
     private JdbcTemplate jdbcTemplate;
 
-    public StorageRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    private TransactionsRepository transactionsRepository;
+
+    public StorageRepositoryImpl(JdbcTemplate jdbcTemplate, TransactionsRepository transactionsRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.transactionsRepository = transactionsRepository;
     }
 
     @Override
@@ -30,7 +38,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                     "select * from CLOTHES_REP",
                     this::mapRowToClothes);
         } catch (DataAccessException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
 
         return list;
@@ -49,13 +57,65 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     @Override
     public Clothes save(Clothes clothes) {
-        jdbcTemplate.update(
-                "insert into CLOTHES_REP (type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?)",
-                clothes.getTypeClothes().toString(),
-                clothes.getSize().toString(),
-                clothes.getColor().toString(),
-                clothes.getCotton(),
-                clothes.getQuantity());
+
+        int idTr = 0;
+
+        transactionsRepository.save(new Transaction.TransactionBuilder()
+                .typeTransaction(TypeTransaction.INCOMING)
+                .typeClothes(clothes.getTypeClothes())
+                .createTime(LocalDateTime.now())
+                .clothesQuantity(clothes.getQuantity())
+                .build());
+
+        String sqlFindInDB = "select * from CLOTHES_REP " +
+                "where type_Clothes=" + "'" + clothes.getTypeClothes().toString() + "'" +
+                " and size=" + "'" + clothes.getSize().toString() + "'" +
+                " and color=" + "'" + clothes.getColor().toString() + "'" +
+                " and cotton=" + "'" + clothes.getCotton() + "'";
+
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlFindInDB);
+
+        if (!result.next()) {
+            SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
+            if (sqlRowSetForInsert.next()) {
+                idTr = sqlRowSetForInsert.getInt("id");
+            }
+
+            jdbcTemplate.update(
+                    "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
+                    idTr,
+                    clothes.getTypeClothes().toString(),
+                    clothes.getSize().toString(),
+                    clothes.getColor().toString(),
+                    clothes.getCotton(),
+                    clothes.getQuantity());
+        } else {
+            String sqlUpdate = "update CLOTHES_REP " +
+                    "set quantity = " + (result.getInt("quantity") + clothes.getQuantity()) +
+                    " where type_Clothes=" + "'" + clothes.getTypeClothes().toString() + "'" +
+                    " and size=" + "'" + clothes.getSize().toString() + "'" +
+                    " and color=" + "'" + clothes.getColor().toString() + "'" +
+                    " and cotton=" + "'" + clothes.getCotton() + "'";
+
+            jdbcTemplate.update(sqlUpdate);
+        }
+        return clothes;
+    }
+
+    @Override
+    public Clothes updateClothes(Clothes clothes) {
+
+
+//        String sql = "merge into CLOTHES_REP c " +
+//                "using (SELECT ? as type_Clothes,  ? as size, ? as color, ? as cotton, ? as quantity from dual) d " +
+//                "on (c.type_Clothes = d.type_Clothes, c.size = d.size, c.color = d.color, c.cotton = d.cotton) " +
+//                "when matched then update " +
+//                "set c.quantity = d.quantity " +
+//                "when not matched then insert (type_Clothes, size, color, cotton, quantity) " +
+//                "values(d.type_Clothes, d.size, d.color, d.quantity)";
+//
+//        jdbcTemplate.update(sql, type_Clothes, size, color, cotton, quantity);
+
         return clothes;
     }
 
