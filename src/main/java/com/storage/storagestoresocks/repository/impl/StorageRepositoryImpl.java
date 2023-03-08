@@ -23,6 +23,8 @@ import java.util.Optional;
 
 @Repository
 public class StorageRepositoryImpl implements StorageRepository {
+
+    int idLastTransaction = 0;
     private JdbcTemplate jdbcTemplate;
 
     private TransactionsRepository transactionsRepository;
@@ -106,18 +108,32 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     @Override
     public int[] batchUpdate(final List<Clothes> clothes) {
-        final int[] idTr = {0};
+
+        transactionsRepository.save(new Transaction.TransactionBuilder()
+                .typeTransaction(TypeTransaction.INCOMING)
+                .typeClothes(clothes.stream()
+                        .map(Clothes::getTypeClothes)
+                        .findFirst()
+                        .orElse(TypeClothes.SOCKS))
+                .createTime(LocalDateTime.now())
+                .clothesQuantity(clothes.stream()
+                        .mapToInt(Clothes::getQuantity)
+                        .sum())
+                .build());
+
         SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
+
         if (sqlRowSetForInsert.next()) {
-            idTr[0] = sqlRowSetForInsert.getInt("id")-1;
+            idLastTransaction = sqlRowSetForInsert.getInt("id");
         }
-        int[] updateCounts = jdbcTemplate.batchUpdate(
+
+
+        return jdbcTemplate.batchUpdate(
                 "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        idTr[0]++;
-                        ps.setInt(1, idTr[0]);
+                        ps.setInt(1, idLastTransaction);
                         ps.setString(2, clothes.get(i).getTypeClothes().toString());
                         ps.setString(3, clothes.get(i).getSize().toString());
                         ps.setString(4, clothes.get(i).getColor().toString());
@@ -131,7 +147,6 @@ public class StorageRepositoryImpl implements StorageRepository {
                     }
                 }
         );
-        return updateCounts;
     }
 
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
@@ -144,4 +159,5 @@ public class StorageRepositoryImpl implements StorageRepository {
                 row.getInt("COTTON"),
                 row.getInt("QUANTITY"));
     }
+
 }

@@ -5,6 +5,7 @@ import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.services.StorageService;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,9 +59,28 @@ public class StorageController {
 
     @GetMapping("/batch_update_test")
     public ResponseEntity<int[]> batchUpdateTest() {
+
         List<Clothes> clothesList = new ArrayList<>();
-        clothesList.add(new Clothes(TypeClothes.SOCKS, Size.SIZE_M, Color.BLUE, 80, 10));
-        clothesList.add(new Clothes(TypeClothes.SOCKS, Size.SIZE_S, Color.BLUE, 70, 10));
+        TypeClothes[] typeClothes = TypeClothes.values();
+        Size[] sizes = Size.values();
+        Color[] colors = Color.values();
+        StopWatch stopWatch = new StopWatch();
+
+        stopWatch.start();
+
+        for (int i = 0; i < 10000; i++) {
+
+            clothesList.add(new Clothes(
+                    typeClothes[(int) (Math.random() * 4)],
+                    sizes[(int) (Math.random() * 3)],
+                    colors[(int) (Math.random() * 3)],
+                    (int) (Math.random() * 100),
+                    (int) (Math.random() * 600)
+            ));
+        }
+        stopWatch.stop();
+        System.out.println("Time has passed with create objects, ms: " + stopWatch.getTime());
+
         return ResponseEntity.ok(storageRepository.batchUpdate(clothesList));
     }
 
