@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.models.Transaction;
+import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.TransactionsService;
@@ -113,35 +114,43 @@ public class TransactionsServiceImpl implements TransactionsService {
     public int calculateQuantity(@RequestParam(required = false) Color color,
                                  @RequestParam(required = false) Size size,
                                  @RequestParam(required = false) TypeClothes typeClothes) {
-        int quantity = 0;
-        for (Transaction transaction : transactionArrayList) {
-
-            if (color == null && size == null && typeClothes == null) {
-
-                quantity += transaction.getClothesQuantity();
-
-            } else if (size == null &&
-                    transaction.getColor() == color &&
-                    transaction.getTypeClothes() == typeClothes) {
-
-                quantity += transaction.getClothesQuantity();
-
-            } else if (typeClothes == null &&
-                    transaction.getColor() == color &&
-                    transaction.getSize() == size) {
-
-                quantity += transaction.getClothesQuantity();
-
-            } else if (transaction.getColor() == color &&
-                    transaction.getSize() == size &&
-                    transaction.getTypeClothes() == typeClothes) {
-
-                quantity += transaction.getClothesQuantity();
-            }
-        }
-
-
-        return quantity;
+//        int quantity = 0;
+        return transactionArrayList.stream()
+                .filter(clothes ->
+                        (color == null || color == clothes.getColor())
+                                && (size == null || size == clothes.getSize())
+                                && (typeClothes == null || typeClothes.toString() == clothes.getTypeClothes()))
+                .map(Transaction::getClothesQuantity)
+                .mapToInt(Integer::valueOf)
+                .sum();
+//        for (Transaction transaction : transactionArrayList) {
+//
+//            if (color == null && size == null && typeClothes == null) {
+//
+//                quantity += transaction.getClothesQuantity();
+//
+//            } else if (size == null &&
+//                    transaction.getColor() == color &&
+//                    transaction.getTypeClothes() == typeClothes) {
+//
+//                quantity += transaction.getClothesQuantity();
+//
+//            } else if (typeClothes == null &&
+//                    transaction.getColor() == color &&
+//                    transaction.getSize() == size) {
+//
+//                quantity += transaction.getClothesQuantity();
+//
+//            } else if (transaction.getColor() == color &&
+//                    transaction.getSize() == size &&
+//                    transaction.getTypeClothes() == typeClothes) {
+//
+//                quantity += transaction.getClothesQuantity();
+//            }
+//        }
+//
+//
+//        return quantity;
     }
 
 

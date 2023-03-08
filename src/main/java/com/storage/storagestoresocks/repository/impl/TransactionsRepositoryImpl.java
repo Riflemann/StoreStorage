@@ -60,7 +60,7 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             throws SQLException {
         return new Transaction.TransactionBuilder().
                 typeTransaction(TypeTransaction.valueOf(row.getString("typeTransaction"))).
-                typeClothes(TypeClothes.valueOf(row.getString("typeClothes"))).
+                typeClothes(TypeClothes.valueOf(row.getString("typeClothes")).toString()).
                 createTime(row.getTimestamp("createTime").toLocalDateTime()).
                 clothesQuantity(row.getInt("clothesQuantity"))
                 .build();

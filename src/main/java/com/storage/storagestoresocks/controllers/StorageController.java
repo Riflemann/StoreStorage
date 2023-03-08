@@ -67,7 +67,6 @@ public class StorageController {
         StopWatch stopWatch = new StopWatch();
 
         stopWatch.start();
-
         for (int i = 0; i < 10000; i++) {
 
             clothesList.add(new Clothes(
