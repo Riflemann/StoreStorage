@@ -81,7 +81,13 @@ public class StorageController {
         stopWatch.stop();
         System.out.println("Time has passed with create objects, ms: " + stopWatch.getTime());
 
-        return ResponseEntity.ok(storageRepository.batchUpdate(clothesList));
+        stopWatch.reset();
+        stopWatch.start();
+        int[] quantityOfUpdating = storageRepository.batchUpdate(clothesList);
+        stopWatch.stop();
+        System.out.println("Time has passed with insert 10000 issue, ms: " + stopWatch.getTime());
+
+        return ResponseEntity.ok().body(quantityOfUpdating);
     }
 
 

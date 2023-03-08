@@ -8,6 +8,7 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.repository.TransactionsRepository;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class StorageRepositoryImpl implements StorageRepository {
@@ -66,7 +68,7 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         transactionsRepository.save(new Transaction.TransactionBuilder()
                 .typeTransaction(TypeTransaction.INCOMING)
-                .typeClothes(clothes.getTypeClothes())
+                .typeClothes(clothes.getTypeClothes().toString())
                 .createTime(LocalDateTime.now())
                 .clothesQuantity(clothes.getQuantity())
                 .build());
@@ -109,20 +111,23 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public int[] batchUpdate(final List<Clothes> clothes) {
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         transactionsRepository.save(new Transaction.TransactionBuilder()
                 .typeTransaction(TypeTransaction.INCOMING)
                 .typeClothes(clothes.stream()
                         .map(Clothes::getTypeClothes)
-                        .findFirst()
-                        .orElse(TypeClothes.SOCKS))
+                        .map(Enum::toString)
+                        .collect(Collectors.joining(", ")))
                 .createTime(LocalDateTime.now())
                 .clothesQuantity(clothes.stream()
                         .mapToInt(Clothes::getQuantity)
                         .sum())
                 .build());
+        stopWatch.stop();
+        System.out.println("Time has passed with add in TransactionDB, ms: " + stopWatch.getTime());
 
         SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
-
         if (sqlRowSetForInsert.next()) {
             idLastTransaction = sqlRowSetForInsert.getInt("id");
         }

@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class Transaction {
     TypeTransaction typeTransaction;
 
-    TypeClothes typeClothes;
+    String typeClothes;
 
     String createTime;
 
@@ -49,7 +49,7 @@ public class Transaction {
         final static DateTimeFormatter FORMAT_DATE = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         private TypeTransaction typeTransaction;
 
-        private TypeClothes typeClothes;
+        private String typeClothes;
 
         private String createTime;
 
@@ -72,7 +72,7 @@ public class Transaction {
             return this;
         }
 
-        public TransactionBuilder typeClothes(TypeClothes typeClothes) {
+        public TransactionBuilder typeClothes(String typeClothes) {
             this.typeClothes = typeClothes;
             return this;
         }

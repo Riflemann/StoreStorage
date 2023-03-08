@@ -55,7 +55,7 @@ public class TransactionsServiceImpl implements TransactionsService {
         transactionsMap.put(counter, new Transaction.TransactionBuilder().
                 typeTransaction(typeTransaction).
 //                iD(counter++).
-                typeClothes(typeClothes).
+                typeClothes(typeClothes.toString()).
                 createTime(LocalDateTime.now()).
                 cotton(cotton).
 //                size(size).
@@ -139,6 +139,8 @@ public class TransactionsServiceImpl implements TransactionsService {
                 quantity += transaction.getClothesQuantity();
             }
         }
+
+
         return quantity;
     }
 
