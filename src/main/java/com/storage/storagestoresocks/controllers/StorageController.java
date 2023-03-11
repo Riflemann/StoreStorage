@@ -42,21 +42,6 @@ public class StorageController {
         return ResponseEntity.ok(storageService.obtainAllClothes());
     }
 
-    @GetMapping("/from/h2")
-    public ResponseEntity<List<Clothes>> getAllFromH2() {
-        return ResponseEntity.ok(storageRepository.findAll());
-    }
-
-    @GetMapping("/from/h2byId")
-    public ResponseEntity<Optional<Clothes>> getAllFromH2ById(String id) {
-        return ResponseEntity.ok(storageRepository.findById(id));
-    }
-
-    @GetMapping("/save")
-    public ResponseEntity<Clothes> saveToH2(Clothes clothes) {
-        return ResponseEntity.ok(storageRepository.save(clothes));
-    }
-
     @GetMapping("/batch_update_test")
     public ResponseEntity<int[]> batchUpdateTest() {
 

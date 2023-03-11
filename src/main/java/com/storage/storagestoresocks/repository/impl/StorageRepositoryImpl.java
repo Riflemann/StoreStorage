@@ -118,6 +118,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                 .typeClothes(clothes.stream()
                         .map(Clothes::getTypeClothes)
                         .map(Enum::toString)
+                        .distinct()
                         .collect(Collectors.joining(", ")))
                 .createTime(LocalDateTime.now())
                 .clothesQuantity(clothes.stream()

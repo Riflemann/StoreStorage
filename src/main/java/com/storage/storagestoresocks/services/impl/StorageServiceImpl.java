@@ -62,28 +62,30 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void addClothesInStorage(Clothes clothes) throws QuantityException {
-        if (!storage.containsValue(clothes)) {
-            storage.put(counter++, clothes);
-        } else {
-            int key = checkQuantity(clothes, storage);
-            storage.get(key).setQuantity(storage.get(key).getQuantity() + clothes.getQuantity());
-        }
 
-        fileService.saveToFile(fileStorageName, storage);
+        storageRepository.save(clothes);
 
-        transactionsService.addTransactions(
-                TypeTransaction.INCOMING,
-                clothes.getTypeClothes(),
-                clothes.getQuantity(),
-                clothes.getCotton());
-//                clothes.getSize(),
-//                clothes.getColor());
-
+//        if (!storage.containsValue(clothes)) {
+//            storage.put(counter++, clothes);
+//        } else {
+//            int key = checkQuantity(clothes, storage);
+//            storage.get(key).setQuantity(storage.get(key).getQuantity() + clothes.getQuantity());
+//        }
+//
+//        fileService.saveToFile(fileStorageName, storage);
+//
+//        transactionsService.addTransactions(
+//                TypeTransaction.INCOMING,
+//                clothes.getTypeClothes(),
+//                clothes.getQuantity(),
+//                clothes.getCotton());
+////                clothes.getSize(),
+////                clothes.getColor());
     }
 
     @Override
     public List<Clothes> obtainAllClothes() {
-        return new ArrayList<>(storage.values());
+        return storageRepository.findAll();
     }
 
     @Override
