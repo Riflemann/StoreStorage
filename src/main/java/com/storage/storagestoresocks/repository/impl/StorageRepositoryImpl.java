@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Repository
 public class StorageRepositoryImpl implements StorageRepository {
 
-    int idLastTransaction = 0;
+    int idLastTr = 0;
     private JdbcTemplate jdbcTemplate;
 
     private TransactionsRepository transactionsRepository;
@@ -82,12 +82,12 @@ public class StorageRepositoryImpl implements StorageRepository {
         if (!result.next()) {
             SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
             if (sqlRowSetForInsert.next()) {
-                idLastTransaction = sqlRowSetForInsert.getInt("id");
+                idLastTr = sqlRowSetForInsert.getInt("id");
             }
 
             jdbcTemplate.update(
                     "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
-                    idLastTransaction,
+                    idLastTr,
                     clothes.getTypeClothes().toString(),
                     clothes.getSize().toString(),
                     clothes.getColor().toString(),
@@ -128,7 +128,7 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
         if (sqlRowSetForInsert.next()) {
-            idLastTransaction = sqlRowSetForInsert.getInt("id");
+            idLastTr = sqlRowSetForInsert.getInt("id");
         }
 
 
@@ -137,7 +137,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, idLastTransaction);
+                        ps.setInt(1, idLastTr);
                         ps.setString(2, clothes.get(i).getTypeClothes().toString());
                         ps.setString(3, clothes.get(i).getSize().toString());
                         ps.setString(4, clothes.get(i).getColor().toString());
