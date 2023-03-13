@@ -37,6 +37,7 @@ class StorageRepositoryImplTest {
     private static StorageRepositoryImpl out;
 
     private Clothes clothes = new Clothes(TypeClothes.SOCKS, Size.SIZE_M, Color.BLUE, 80, 500);
+    private Clothes clothesTwo = new Clothes(TypeClothes.SOCKS, Size.SIZE_M, Color.BLUE, 80, 500);
 
     @BeforeAll
     static void setUp() throws Exception {
