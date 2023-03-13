@@ -64,8 +64,6 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public Clothes save(Clothes clothes) {
 
-        int idTr = 0;
-
         transactionsRepository.save(new Transaction.TransactionBuilder()
                 .typeTransaction(TypeTransaction.INCOMING)
                 .typeClothes(clothes.getTypeClothes().toString())
@@ -84,12 +82,12 @@ public class StorageRepositoryImpl implements StorageRepository {
         if (!result.next()) {
             SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
             if (sqlRowSetForInsert.next()) {
-                idTr = sqlRowSetForInsert.getInt("id");
+                idLastTransaction = sqlRowSetForInsert.getInt("id");
             }
 
             jdbcTemplate.update(
                     "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
-                    idTr,
+                    idLastTransaction,
                     clothes.getTypeClothes().toString(),
                     clothes.getSize().toString(),
                     clothes.getColor().toString(),
