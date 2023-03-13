@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Repository
 public class StorageRepositoryImpl implements StorageRepository {
 
-    int idLastTr = 0;
+    int idLastTransaction;
     private JdbcTemplate jdbcTemplate;
 
     private TransactionsRepository transactionsRepository;
@@ -64,6 +64,8 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public Clothes save(Clothes clothes) {
 
+        idLastTransaction = 0;
+
         transactionsRepository.save(new Transaction.TransactionBuilder()
                 .typeTransaction(TypeTransaction.INCOMING)
                 .typeClothes(clothes.getTypeClothes().toString())
@@ -82,12 +84,12 @@ public class StorageRepositoryImpl implements StorageRepository {
         if (!result.next()) {
             SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
             if (sqlRowSetForInsert.next()) {
-                idLastTr = sqlRowSetForInsert.getInt("id");
+                idLastTransaction = sqlRowSetForInsert.getInt("id");
             }
 
             jdbcTemplate.update(
                     "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
-                    idLastTr,
+                    idLastTransaction,
                     clothes.getTypeClothes().toString(),
                     clothes.getSize().toString(),
                     clothes.getColor().toString(),
@@ -109,6 +111,8 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public int[] batchUpdate(final List<Clothes> clothes) {
 
+        idLastTransaction = 0;
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         transactionsRepository.save(new Transaction.TransactionBuilder()
@@ -128,7 +132,7 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
         if (sqlRowSetForInsert.next()) {
-            idLastTr = sqlRowSetForInsert.getInt("id");
+            idLastTransaction = sqlRowSetForInsert.getInt("id");
         }
 
 
@@ -137,7 +141,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, idLastTr);
+                        ps.setInt(1, idLastTransaction);
                         ps.setString(2, clothes.get(i).getTypeClothes().toString());
                         ps.setString(3, clothes.get(i).getSize().toString());
                         ps.setString(4, clothes.get(i).getColor().toString());
