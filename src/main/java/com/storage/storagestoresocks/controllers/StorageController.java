@@ -1,5 +1,6 @@
 package com.storage.storagestoresocks.controllers;
 
+import com.storage.storagestoresocks.exceptions.NotFoundException;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.*;
@@ -7,15 +8,11 @@ import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.services.StorageService;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/storage")
@@ -31,7 +28,7 @@ public class StorageController {
     }
 
     @PostMapping()
-    public ResponseEntity<Clothes[]> addSocksInStorage(@Valid @RequestBody Clothes... clothes) throws QuantityException {
+    public ResponseEntity<Clothes[]> addClothesInStorage(@Valid @RequestBody Clothes... clothes) throws QuantityException {
         for (Clothes clothe : clothes) {
             storageService.addClothesInStorage(clothe);
         }
@@ -41,6 +38,17 @@ public class StorageController {
     @GetMapping("/allSocks")
     public ResponseEntity<List<Clothes>> getAllSocksList() {
         return ResponseEntity.ok(storageService.obtainAllClothes());
+    }
+
+    @PutMapping("/AsyncStorage")
+    public ResponseEntity<Clothes> getFromStorage(@Valid @RequestBody Clothes clothes) {
+
+        try {
+            storageRepository.obtainFromStorage(clothes);
+        } catch (QuantityException | NotFoundException e) {
+            ResponseEntity.badRequest().body(e);
+        }
+       return ResponseEntity.ok().body(clothes);
     }
 
     @GetMapping("/batch_update_test")

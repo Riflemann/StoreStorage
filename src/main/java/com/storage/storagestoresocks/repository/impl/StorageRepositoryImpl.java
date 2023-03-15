@@ -1,5 +1,7 @@
 package com.storage.storagestoresocks.repository.impl;
 
+import com.storage.storagestoresocks.exceptions.NotFoundException;
+import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.Transaction;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
@@ -9,7 +11,6 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.repository.TransactionsRepository;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +18,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -39,16 +39,11 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
     public StorageRepositoryImpl(JdbcTemplate jdbcTemplate, TransactionsRepository transactionsRepository, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.transactionsRepository = transactionsRepository;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
-
-//    public void setDataSource(DataSource dataSource) {
-//        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-//    }
 
     @Override
     public List<Clothes> findAll() {
@@ -171,7 +166,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         );
     }
 
-    //    Color color, Size size, int cottonMin, int cottonMax
     @Override
     public int availabilityCheck(TypeClothes typeClothes, Size size, Color color, int cottonMin, int cottonMax) {
 
@@ -194,6 +188,23 @@ public class StorageRepositoryImpl implements StorageRepository {
                 .sum();
     }
 
+    @Override
+    public Clothes obtainFromStorage(Clothes clothes) throws NotFoundException, QuantityException {
+
+        SqlRowSet sqlRowSet = findByClothesAndReturnRowSet(clothes);
+
+        if (sqlRowSet.getInt("quantity") > clothes.getQuantity()) {
+            namedParameterJdbcTemplate.update(
+                    "update CLOTHES_REP set quantity = :quantity where id = :id",
+                    new MapSqlParameterSource()
+                            .addValue("quantity", sqlRowSet.getInt("quantity") - clothes.getQuantity())
+                            .addValue("id", sqlRowSet.getInt("id")));
+        } else {
+            throw new QuantityException("На складе количесво товара меньше указанного");
+        }
+        return clothes;
+    }
+
 
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
             throws SQLException {
@@ -204,6 +215,25 @@ public class StorageRepositoryImpl implements StorageRepository {
                 Color.valueOf(row.getString("color")),
                 row.getInt("COTTON"),
                 row.getInt("QUANTITY"));
+    }
+
+    private SqlRowSet findByClothesAndReturnRowSet(Clothes clothes) throws NotFoundException {
+
+        String sqlGetRowByClothes = "select * from CLOTHES_REP where type_clothes = :typeClothes and size = :size and color = :color and cotton = :cotton";
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("typeClothes", clothes.getTypeClothes().toString())
+                .addValue("size", clothes.getSize().toString())
+                .addValue("color", clothes.getColor().toString())
+                .addValue("cotton", clothes.getCotton());
+
+        SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(sqlGetRowByClothes, namedParameters);
+
+        if (sqlRowSet.next()) {
+            return sqlRowSet;
+        } else {
+            throw new NotFoundException("Указанного товара нет на складе");
+        }
     }
 
 }
