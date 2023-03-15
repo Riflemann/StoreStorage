@@ -124,18 +124,17 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public int availabilityCheck(Color color, Size size, TypeClothes typeClothes, int cottonMin, int cottonMax) {
 
-        return storage.values().stream()
-                .filter(clothes ->
-                        (color == null || color == clothes.getColor())
-                                && (size == null || size == clothes.getSize())
-                                && (typeClothes == null || typeClothes == clothes.getTypeClothes())
-                                && clothes.getCotton() > cottonMin
-                                && clothes.getCotton() < cottonMax)
-                .map(Clothes::getQuantity)
-                .mapToInt(Integer::valueOf)
-                .sum();
-
-
+//        return storage.values().stream()
+//                .filter(clothes ->
+//                        (color == null || color == clothes.getColor())
+//                                && (size == null || size == clothes.getSize())
+//                                && (typeClothes == null || typeClothes == clothes.getTypeClothes())
+//                                && clothes.getCotton() > cottonMin
+//                                && clothes.getCotton() < cottonMax)
+//                .map(Clothes::getQuantity)
+//                .mapToInt(Integer::valueOf)
+//                .sum();
+        return storageRepository.availabilityCheck(typeClothes, size, color, cottonMin, cottonMax);
     }
 
     public static int checkQuantity(Clothes clothes, Map<Integer, Clothes> map) throws QuantityException {

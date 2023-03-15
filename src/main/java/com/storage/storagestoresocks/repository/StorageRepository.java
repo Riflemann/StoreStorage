@@ -1,7 +1,11 @@
 package com.storage.storagestoresocks.repository;
 
 import com.storage.storagestoresocks.models.clothes.Clothes;
+import com.storage.storagestoresocks.models.clothes.enums.Color;
+import com.storage.storagestoresocks.models.clothes.enums.Size;
+import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +18,6 @@ public interface StorageRepository {
     Clothes save(Clothes clothes);
 
     int[] batchUpdate(List<Clothes> clothes);
+
+    int availabilityCheck(TypeClothes typeClothes, Size size, Color color, int cottonMin, int cottonMax);
 }

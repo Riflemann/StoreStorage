@@ -9,12 +9,18 @@ import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.repository.TransactionsRepository;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,10 +37,18 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     private TransactionsRepository transactionsRepository;
 
-    public StorageRepositoryImpl(JdbcTemplate jdbcTemplate, TransactionsRepository transactionsRepository) {
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+
+    public StorageRepositoryImpl(JdbcTemplate jdbcTemplate, TransactionsRepository transactionsRepository, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.transactionsRepository = transactionsRepository;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
+
+//    public void setDataSource(DataSource dataSource) {
+//        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+//    }
 
     @Override
     public List<Clothes> findAll() {
@@ -156,6 +170,30 @@ public class StorageRepositoryImpl implements StorageRepository {
                 }
         );
     }
+
+    //    Color color, Size size, int cottonMin, int cottonMax
+    @Override
+    public int availabilityCheck(TypeClothes typeClothes, Size size, Color color, int cottonMin, int cottonMax) {
+
+        String sqlGetQuantity = "select * from CLOTHES_REP where (:typeClothes is null or type_clothes = :typeClothes) and (:size is null or size = :size)" +
+                " and (:color is null or color = :color) and (cotton between :cottonMin and :cottonMax)";
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("typeClothes", typeClothes == null ? null : typeClothes.toString())
+                .addValue("size", size == null ? null : size.toString())
+                .addValue("color", color == null ? null : color.toString())
+                .addValue("cottonMin", cottonMin)
+                .addValue("cottonMax", cottonMax);
+
+        return namedParameterJdbcTemplate.query(
+                        sqlGetQuantity,
+                        namedParameters,
+                        this::mapRowToClothes
+                ).stream()
+                .mapToInt(Clothes::getQuantity)
+                .sum();
+    }
+
 
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
             throws SQLException {

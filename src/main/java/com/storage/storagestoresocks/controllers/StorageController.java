@@ -7,6 +7,7 @@ import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.services.StorageService;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -73,14 +74,6 @@ public class StorageController {
 
         return ResponseEntity.ok().body(quantityOfUpdating);
     }
-
-
-    @GetMapping("/batch_update_not_work")
-    public ResponseEntity<int[]> batchUpdatezzz(@RequestBody Clothes... clothes) {
-        List<Clothes> clothesList = Arrays.stream(clothes).collect(Collectors.toList());
-        return ResponseEntity.ok(storageRepository.batchUpdate(clothesList));
-    }
-
 
     @GetMapping("/quantity")
 
