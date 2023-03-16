@@ -1,6 +1,5 @@
 package com.storage.storagestoresocks.repository.impl;
 
-import com.storage.storagestoresocks.exceptions.NotFoundException;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.Transaction;
 import com.storage.storagestoresocks.models.clothes.Clothes;
@@ -25,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,7 +71,7 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public Clothes save(Clothes clothes) {
+    public Clothes save(Clothes clothes)  {
 
         idLastTransaction = 0;
 
@@ -82,15 +82,11 @@ public class StorageRepositoryImpl implements StorageRepository {
                 .clothesQuantity(clothes.getQuantity())
                 .build());
 
-        String sqlFindInDB = "select * from CLOTHES_REP " +
-                "where type_Clothes=" + "'" + clothes.getTypeClothes().toString() + "'" +
-                " and size=" + "'" + clothes.getSize().toString() + "'" +
-                " and color=" + "'" + clothes.getColor().toString() + "'" +
-                " and cotton=" + "'" + clothes.getCotton() + "'";
+        SqlRowSet result = findByClothesAndReturnRowSet(clothes);
 
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sqlFindInDB);
-
+        result.previous();
         if (!result.next()) {
+
             SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
             if (sqlRowSetForInsert.next()) {
                 idLastTransaction = sqlRowSetForInsert.getInt("id");
@@ -105,14 +101,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                     clothes.getCotton(),
                     clothes.getQuantity());
         } else {
-            String sqlUpdate = "update CLOTHES_REP " +
-                    "set quantity = " + (result.getInt("quantity") + clothes.getQuantity()) +
-                    " where type_Clothes=" + "'" + clothes.getTypeClothes().toString() + "'" +
-                    " and size=" + "'" + clothes.getSize().toString() + "'" +
-                    " and color=" + "'" + clothes.getColor().toString() + "'" +
-                    " and cotton=" + "'" + clothes.getCotton() + "'";
-
-            jdbcTemplate.update(sqlUpdate);
+            updateQuantityInDB(clothes, result);
         }
         return clothes;
     }
@@ -124,6 +113,7 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+
         transactionsRepository.save(new Transaction.TransactionBuilder()
                 .typeTransaction(TypeTransaction.INCOMING)
                 .typeClothes(clothes.stream()
@@ -136,6 +126,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                         .mapToInt(Clothes::getQuantity)
                         .sum())
                 .build());
+
         stopWatch.stop();
         System.out.println("Time has passed with add in TransactionDB, ms: " + stopWatch.getTime());
 
@@ -189,8 +180,10 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public Clothes obtainFromStorage(Clothes clothes) throws NotFoundException, QuantityException {
-
+    public Clothes obtainFromStorage(Clothes clothes) throws  QuantityException {
+    /*
+    todo добавить сохранение транзакции
+     */
         SqlRowSet sqlRowSet = findByClothesAndReturnRowSet(clothes);
 
         if (sqlRowSet.getInt("quantity") > clothes.getQuantity()) {
@@ -217,7 +210,7 @@ public class StorageRepositoryImpl implements StorageRepository {
                 row.getInt("QUANTITY"));
     }
 
-    private SqlRowSet findByClothesAndReturnRowSet(Clothes clothes) throws NotFoundException {
+    private SqlRowSet findByClothesAndReturnRowSet(Clothes clothes) {
 
         String sqlGetRowByClothes = "select * from CLOTHES_REP where type_clothes = :typeClothes and size = :size and color = :color and cotton = :cotton";
 
@@ -232,8 +225,22 @@ public class StorageRepositoryImpl implements StorageRepository {
         if (sqlRowSet.next()) {
             return sqlRowSet;
         } else {
-            throw new NotFoundException("Указанного товара нет на складе");
+            System.out.println("Указанного товара нет на складе");
         }
+        return sqlRowSet;
+    }
+
+    private void updateQuantityInDB(Clothes clothes, SqlRowSet sqlRowSet) {
+
+        String sqlForUpdateQuantityInDB = "update CLOTHES_REP set quantity = :quantity where type_Clothes = :typeClothes and size = :size and color = :color and cotton = :cotton";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("quantity", clothes.getQuantity() + sqlRowSet.getInt("quantity"))
+                .addValue("typeClothes", clothes.getTypeClothes().toString())
+                .addValue("size", clothes.getSize().toString())
+                .addValue("color", clothes.getColor().toString())
+                .addValue("cotton", clothes.getCotton());
+
+        namedParameterJdbcTemplate.update(sqlForUpdateQuantityInDB, namedParameters);
     }
 
 }

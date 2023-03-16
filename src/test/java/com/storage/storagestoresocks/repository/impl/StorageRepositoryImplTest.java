@@ -1,5 +1,6 @@
 package com.storage.storagestoresocks.repository.impl;
 
+import com.storage.storagestoresocks.exceptions.NotFoundException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
@@ -85,7 +86,7 @@ class StorageRepositoryImplTest {
     }
 
     @Test
-    public void testSaveMethod() throws SQLException {
+    public void testSaveMethod() throws SQLException, NotFoundException {
 
         SqlRowSet sqlRowSet = mock(SqlRowSet.class);
 

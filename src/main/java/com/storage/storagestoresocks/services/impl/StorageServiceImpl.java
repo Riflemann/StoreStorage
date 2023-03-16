@@ -61,7 +61,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void addClothesInStorage(Clothes clothes) throws QuantityException {
+    public void addClothesInStorage(Clothes clothes)  {
 
         storageRepository.save(clothes);
 

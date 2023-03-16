@@ -1,6 +1,5 @@
 package com.storage.storagestoresocks.controllers;
 
-import com.storage.storagestoresocks.exceptions.NotFoundException;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.*;
@@ -41,11 +40,11 @@ public class StorageController {
     }
 
     @PutMapping("/AsyncStorage")
-    public ResponseEntity<Clothes> getFromStorage(@Valid @RequestBody Clothes clothes) {
+    public ResponseEntity<Clothes> getFromStorage(@Valid @RequestBody Clothes clothes) throws QuantityException {
 
         try {
             storageRepository.obtainFromStorage(clothes);
-        } catch (QuantityException | NotFoundException e) {
+        } catch (QuantityException e) {
             ResponseEntity.badRequest().body(e);
         }
        return ResponseEntity.ok().body(clothes);
