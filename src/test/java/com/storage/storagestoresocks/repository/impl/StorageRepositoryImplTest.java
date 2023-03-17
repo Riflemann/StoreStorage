@@ -86,7 +86,7 @@ class StorageRepositoryImplTest {
     }
 
     @Test
-    public void testSaveMethod() throws SQLException, NotFoundException {
+    public void testSaveMethod() throws SQLException {
 
         SqlRowSet sqlRowSet = mock(SqlRowSet.class);
 

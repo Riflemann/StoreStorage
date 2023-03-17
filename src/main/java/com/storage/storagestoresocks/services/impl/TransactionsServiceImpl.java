@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.models.Transaction;
-import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.*;
+import com.storage.storagestoresocks.repository.TransactionsRepository;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.TransactionsService;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +26,7 @@ import java.util.Map;
 public class TransactionsServiceImpl implements TransactionsService {
 
     private final FileService fileService;
+    private  final TransactionsRepository transactionsRepository;
 
     @Value("${name.of.transaction.file}")
     private String fileTransactionName;
@@ -45,113 +46,104 @@ public class TransactionsServiceImpl implements TransactionsService {
         counter = transactionsMap.size();
     }
 
-    public TransactionsServiceImpl(FileService fileService) {
+    public TransactionsServiceImpl(FileService fileService, TransactionsRepository transactionsRepository) {
         this.fileService = fileService;
+        this.transactionsRepository = transactionsRepository;
     }
 
-    @Override
-    public void addTransactions(TypeTransaction typeTransaction, TypeClothes typeClothes,
-                                int socksQuantity, int cotton) {
-
-        transactionsMap.put(counter, new Transaction.TransactionBuilder().
-                typeTransaction(typeTransaction).
-//                iD(counter++).
-                typeClothes(typeClothes.toString()).
-                createTime(LocalDateTime.now()).
-                cotton(cotton).
-//                size(size).
-//                color(color).
-                clothesQuantity(socksQuantity).
-                build());
-
-        fileService.saveToFile(fileTransactionName, transactionsMap);
-
-        System.out.println("Транзакция № " + (counter - 1) + " добавлена");
-    }
+//    @Override
+//    public void addTransactions(TypeTransaction typeTransaction, TypeClothes typeClothes,
+//                                int socksQuantity, int cotton) {
+//        transactionsRepository.save();
+//
+//        fileService.saveToFile(fileTransactionName, transactionsMap);
+//
+//        System.out.println("Транзакция № " + (counter - 1) + " добавлена");
+//    }
 
     @Override
     public List<Transaction> getAllTransactions() {
         return new ArrayList<>(transactionsMap.values());
     }
 
-    @Override
-    public List<Transaction> extractList(@RequestParam(required = false) String fromDate,
-                            @RequestParam(required = false) String toDate,
-                            int cottonMin,
-                            int cottonMax) {
-
-        transactionArrayList.clear();
-        LocalDateTime lDTFromDate;
-        LocalDateTime lDTToDate;
-
-
-        if (cottonMax == 0) {
-            cottonMax = 100;
-        }
-
-        if (fromDate != null && toDate != null) {
-            lDTFromDate = LocalDate.parse(fromDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
-            lDTToDate = LocalDate.parse(toDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
-        } else {
-            lDTFromDate = LocalDateTime.now().minusYears(1L);
-            lDTToDate = LocalDateTime.now();
-        }
-
-        for (Transaction transaction : transactionsMap.values()) {
-            LocalDateTime lDTTransaction = LocalDate.parse(transaction.getCreateTime(), StorageServiceImpl.FORMAT_DATE).atTime(12, 0);
-            if (lDTTransaction.isAfter(lDTFromDate) &&
-                    lDTTransaction.isBefore(lDTToDate) &&
-                    transaction.getCotton() <= cottonMax &&
-                    transaction.getCotton() >= cottonMin) {
-
-                transactionArrayList.add(transaction);
-            }
-        }
-        return transactionArrayList;
-    }
-
-    @Override
-    public int calculateQuantity(@RequestParam(required = false) Color color,
-                                 @RequestParam(required = false) Size size,
-                                 @RequestParam(required = false) TypeClothes typeClothes) {
-//        int quantity = 0;
-        return transactionArrayList.stream()
-                .filter(clothes ->
-                        (color == null || color == clothes.getColor())
-                                && (size == null || size == clothes.getSize())
-                                && (typeClothes == null || typeClothes.toString() == clothes.getTypeClothes()))
-                .map(Transaction::getClothesQuantity)
-                .mapToInt(Integer::valueOf)
-                .sum();
-//        for (Transaction transaction : transactionArrayList) {
+//    @Override
+//    public List<Transaction> extractList(@RequestParam(required = false) String fromDate,
+//                            @RequestParam(required = false) String toDate,
+//                            int cottonMin,
+//                            int cottonMax) {
 //
-//            if (color == null && size == null && typeClothes == null) {
+//        transactionArrayList.clear();
+//        LocalDateTime lDTFromDate;
+//        LocalDateTime lDTToDate;
 //
-//                quantity += transaction.getClothesQuantity();
 //
-//            } else if (size == null &&
-//                    transaction.getColor() == color &&
-//                    transaction.getTypeClothes() == typeClothes) {
-//
-//                quantity += transaction.getClothesQuantity();
-//
-//            } else if (typeClothes == null &&
-//                    transaction.getColor() == color &&
-//                    transaction.getSize() == size) {
-//
-//                quantity += transaction.getClothesQuantity();
-//
-//            } else if (transaction.getColor() == color &&
-//                    transaction.getSize() == size &&
-//                    transaction.getTypeClothes() == typeClothes) {
-//
-//                quantity += transaction.getClothesQuantity();
-//            }
+//        if (cottonMax == 0) {
+//            cottonMax = 100;
 //        }
 //
+//        if (fromDate != null && toDate != null) {
+//            lDTFromDate = LocalDate.parse(fromDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
+//            lDTToDate = LocalDate.parse(toDate, StorageServiceImpl.FORMAT_DATE).atStartOfDay();
+//        } else {
+//            lDTFromDate = LocalDateTime.now().minusYears(1L);
+//            lDTToDate = LocalDateTime.now();
+//        }
 //
-//        return quantity;
-    }
+//        for (Transaction transaction : transactionsMap.values()) {
+//            LocalDateTime lDTTransaction = LocalDate.parse(transaction.getCreateTime(), StorageServiceImpl.FORMAT_DATE).atTime(12, 0);
+//            if (lDTTransaction.isAfter(lDTFromDate) &&
+//                    lDTTransaction.isBefore(lDTToDate) &&
+//                    transaction.getCotton() <= cottonMax &&
+//                    transaction.getCotton() >= cottonMin) {
+//
+//                transactionArrayList.add(transaction);
+//            }
+//        }
+//        return transactionArrayList;
+//    }
+
+//    @Override
+//    public int calculateQuantity(@RequestParam(required = false) Color color,
+//                                 @RequestParam(required = false) Size size,
+//                                 @RequestParam(required = false) TypeClothes typeClothes) {
+////        int quantity = 0;
+//        return transactionArrayList.stream()
+//                .filter(clothes ->
+//                        (color == null || color == clothes.getColor())
+//                                && (size == null || size == clothes.getSize())
+//                                && (typeClothes == null || typeClothes.toString() == clothes.getTypeClothes()))
+//                .map(Transaction::getClothesQuantity)
+//                .mapToInt(Integer::valueOf)
+//                .sum();
+////        for (Transaction transaction : transactionArrayList) {
+////
+////            if (color == null && size == null && typeClothes == null) {
+////
+////                quantity += transaction.getClothesQuantity();
+////
+////            } else if (size == null &&
+////                    transaction.getColor() == color &&
+////                    transaction.getTypeClothes() == typeClothes) {
+////
+////                quantity += transaction.getClothesQuantity();
+////
+////            } else if (typeClothes == null &&
+////                    transaction.getColor() == color &&
+////                    transaction.getSize() == size) {
+////
+////                quantity += transaction.getClothesQuantity();
+////
+////            } else if (transaction.getColor() == color &&
+////                    transaction.getSize() == size &&
+////                    transaction.getTypeClothes() == typeClothes) {
+////
+////                quantity += transaction.getClothesQuantity();
+////            }
+////        }
+////
+////
+////        return quantity;
+//    }
 
 
     private void readFromFile() {

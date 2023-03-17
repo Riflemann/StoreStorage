@@ -3,6 +3,7 @@ package com.storage.storagestoresocks.repository;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
 import com.storage.storagestoresocks.models.clothes.enums.Color;
+import com.storage.storagestoresocks.models.clothes.enums.Gender;
 import com.storage.storagestoresocks.models.clothes.enums.Size;
 import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
 
@@ -20,7 +21,14 @@ public interface StorageRepository {
 
     int[] batchUpdate(List<Clothes> clothes);
 
-    int availabilityCheck(TypeClothes typeClothes, Size size, Color color, int cottonMin, int cottonMax);
+    int availabilityCheck(TypeClothes typeClothes,
+                          String brand,
+                          String model,
+                          Gender gender,
+                          Size size,
+                          Color color,
+                          int cottonMin,
+                          int cottonMax);
 
     Clothes obtainFromStorage(Clothes clothes) throws QuantityException;
 }

@@ -3,10 +3,7 @@ package com.storage.storagestoresocks.repository.impl;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.Transaction;
 import com.storage.storagestoresocks.models.clothes.Clothes;
-import com.storage.storagestoresocks.models.clothes.enums.Color;
-import com.storage.storagestoresocks.models.clothes.enums.Size;
-import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
-import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.repository.TransactionsRepository;
 import org.apache.commons.lang3.time.StopWatch;
@@ -62,7 +59,7 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Override
     public Optional<Clothes> findById(String id) {
         List<Clothes> results = jdbcTemplate.query(
-                "select id, type_Clothes, size, color, cotton, quantity from CLOTHES_REP where id=?",
+                "select id from CLOTHES_REP where id=?",
                 this::mapRowToClothes,
                 id);
         return results.size() == 0 ?
@@ -71,31 +68,31 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public Clothes save(Clothes clothes)  {
-
+    public Clothes save(Clothes clothes) {
         idLastTransaction = 0;
 
-        transactionsRepository.save(new Transaction.TransactionBuilder()
-                .typeTransaction(TypeTransaction.INCOMING)
-                .typeClothes(clothes.getTypeClothes().toString())
-                .createTime(LocalDateTime.now())
-                .clothesQuantity(clothes.getQuantity())
-                .build());
-
+        transactionsRepository.save(new Transaction(
+                TypeTransaction.INCOMING,
+                clothes.getTypeClothes().toString(),
+                clothes.getBrand(),
+                LocalDateTime.now(),
+                clothes.getQuantity()));
         SqlRowSet result = findByClothesAndReturnRowSet(clothes);
 
         result.previous();
         if (!result.next()) {
-
             SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
             if (sqlRowSetForInsert.next()) {
                 idLastTransaction = sqlRowSetForInsert.getInt("id");
             }
-
             jdbcTemplate.update(
-                    "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
+                    "insert into CLOTHES_REP (transactions_id, type_Clothes, brand, model, gender, size, color, cotton, quantity) " +
+                            "values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     idLastTransaction,
                     clothes.getTypeClothes().toString(),
+                    clothes.getBrand(),
+                    clothes.getModel(),
+                    clothes.getGender() == null ? null : clothes.getGender().toString(),
                     clothes.getSize().toString(),
                     clothes.getColor().toString(),
                     clothes.getCotton(),
@@ -108,45 +105,47 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     @Override
     public int[] batchUpdate(final List<Clothes> clothes) {
-
         idLastTransaction = 0;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-
-        transactionsRepository.save(new Transaction.TransactionBuilder()
-                .typeTransaction(TypeTransaction.INCOMING)
-                .typeClothes(clothes.stream()
+        transactionsRepository.save(new Transaction(
+                TypeTransaction.INCOMING,
+                clothes.stream()
                         .map(Clothes::getTypeClothes)
                         .map(Enum::toString)
                         .distinct()
-                        .collect(Collectors.joining(", ")))
-                .createTime(LocalDateTime.now())
-                .clothesQuantity(clothes.stream()
+                        .collect(Collectors.joining(", ")),
+                clothes.stream()
+                        .map(Clothes::getBrand)
+                        .distinct()
+                        .collect(Collectors.joining(", ")),
+                LocalDateTime.now(),
+                clothes.stream()
                         .mapToInt(Clothes::getQuantity)
-                        .sum())
-                .build());
-
+                        .sum()));
         stopWatch.stop();
-        System.out.println("Time has passed with add in TransactionDB, ms: " + stopWatch.getTime());
+        System.out.println("Time has passed with add batch in TransactionDB, ms: " + stopWatch.getTime());
 
         SqlRowSet sqlRowSetForInsert = jdbcTemplate.queryForRowSet("select * from transactions_rep order by id desc limit 1");
         if (sqlRowSetForInsert.next()) {
             idLastTransaction = sqlRowSetForInsert.getInt("id");
         }
-
-
         return jdbcTemplate.batchUpdate(
-                "insert into CLOTHES_REP (transactions_id, type_Clothes, size, color, cotton, quantity) values (?, ?, ?, ?, ?, ?)",
+                "insert into CLOTHES_REP (transactions_id, type_Clothes, brand, model, gender, size, color, cotton, quantity) " +
+                        "values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setInt(1, idLastTransaction);
                         ps.setString(2, clothes.get(i).getTypeClothes().toString());
-                        ps.setString(3, clothes.get(i).getSize().toString());
-                        ps.setString(4, clothes.get(i).getColor().toString());
-                        ps.setInt(5, clothes.get(i).getCotton());
-                        ps.setInt(6, clothes.get(i).getQuantity());
+                        ps.setString(3, clothes.get(i).getBrand());
+                        ps.setString(4, clothes.get(i).getModel());
+                        ps.setString(5, clothes.get(i).getGender().toString());
+                        ps.setString(6, clothes.get(i).getSize().toString());
+                        ps.setString(7, clothes.get(i).getColor().toString());
+                        ps.setInt(8, clothes.get(i).getCotton());
+                        ps.setInt(9, clothes.get(i).getQuantity());
                     }
 
                     @Override
@@ -158,13 +157,26 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public int availabilityCheck(TypeClothes typeClothes, Size size, Color color, int cottonMin, int cottonMax) {
+    public int availabilityCheck(TypeClothes typeClothes,
+                                 String brand,
+                                 String model,
+                                 Gender gender,
+                                 Size size,
+                                 Color color,
+                                 int cottonMin,
+                                 int cottonMax) {
 
-        String sqlGetQuantity = "select * from CLOTHES_REP where (:typeClothes is null or type_clothes = :typeClothes) and (:size is null or size = :size)" +
-                " and (:color is null or color = :color) and (cotton between :cottonMin and :cottonMax)";
-
+        String sqlGetQuantity = "select * from CLOTHES_REP where " +
+                "(:typeClothes is null or type_clothes = :typeClothes) " +
+                "and (:brand is null or brand = :brand) " +
+                "and (:gender is null or gender = :gender) " +
+                "and (:size is null or size = :size) " +
+                "and (:color is null or color = :color) " +
+                "and (cotton between :cottonMin and :cottonMax)";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("typeClothes", typeClothes == null ? null : typeClothes.toString())
+                .addValue("brand", brand)
+                .addValue("gender", gender == null ? null : gender.toString())
                 .addValue("size", size == null ? null : size.toString())
                 .addValue("color", color == null ? null : color.toString())
                 .addValue("cottonMin", cottonMin)
@@ -180,12 +192,11 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public Clothes obtainFromStorage(Clothes clothes) throws  QuantityException {
+    public Clothes obtainFromStorage(Clothes clothes) throws QuantityException {
     /*
     todo добавить сохранение транзакции
      */
         SqlRowSet sqlRowSet = findByClothesAndReturnRowSet(clothes);
-
         if (sqlRowSet.getInt("quantity") > clothes.getQuantity()) {
             namedParameterJdbcTemplate.update(
                     "update CLOTHES_REP set quantity = :quantity where id = :id",
@@ -198,12 +209,13 @@ public class StorageRepositoryImpl implements StorageRepository {
         return clothes;
     }
 
-
     private Clothes mapRowToClothes(ResultSet row, int rowNum)
             throws SQLException {
-
         return new Clothes(
                 TypeClothes.valueOf(row.getString("type_clothes")),
+                row.getString("brand"),
+                row.getString("model"),
+                Gender.valueOf(row.getString("gender")),
                 Size.valueOf(row.getString("size")),
                 Color.valueOf(row.getString("color")),
                 row.getInt("COTTON"),
@@ -211,17 +223,23 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     private SqlRowSet findByClothesAndReturnRowSet(Clothes clothes) {
-
-        String sqlGetRowByClothes = "select * from CLOTHES_REP where type_clothes = :typeClothes and size = :size and color = :color and cotton = :cotton";
-
+        String sqlGetRowByClothes = "select * from CLOTHES_REP where " +
+                "type_clothes = :typeClothes " +
+                "and brand = :brand " +
+                "and model = :model " +
+                "and gender = :gender " +
+                "and size = :size " +
+                "and color = :color " +
+                "and cotton = :cotton";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("typeClothes", clothes.getTypeClothes().toString())
+                .addValue("brand", clothes.getBrand())
+                .addValue("model", clothes.getModel())
+                .addValue("gender", clothes.getGender().toString())
                 .addValue("size", clothes.getSize().toString())
                 .addValue("color", clothes.getColor().toString())
                 .addValue("cotton", clothes.getCotton());
-
         SqlRowSet sqlRowSet = namedParameterJdbcTemplate.queryForRowSet(sqlGetRowByClothes, namedParameters);
-
         if (sqlRowSet.next()) {
             return sqlRowSet;
         } else {
@@ -232,10 +250,20 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     private void updateQuantityInDB(Clothes clothes, SqlRowSet sqlRowSet) {
 
-        String sqlForUpdateQuantityInDB = "update CLOTHES_REP set quantity = :quantity where type_Clothes = :typeClothes and size = :size and color = :color and cotton = :cotton";
+        String sqlForUpdateQuantityInDB = "update CLOTHES_REP set quantity = :quantity where " +
+                "type_Clothes = :typeClothes " +
+                "and brand = :brand " +
+                "and model = :model " +
+                "and gender = :gender " +
+                "and size = :size " +
+                "and color = :color " +
+                "and cotton = :cotton";
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("quantity", clothes.getQuantity() + sqlRowSet.getInt("quantity"))
                 .addValue("typeClothes", clothes.getTypeClothes().toString())
+                .addValue("brand", clothes.getBrand())
+                .addValue("model", clothes.getModel())
+                .addValue("gender", clothes.getGender().toString())
                 .addValue("size", clothes.getSize().toString())
                 .addValue("color", clothes.getColor().toString())
                 .addValue("cotton", clothes.getCotton());

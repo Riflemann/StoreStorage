@@ -39,8 +39,8 @@ public class StorageController {
         return ResponseEntity.ok(storageService.obtainAllClothes());
     }
 
-    @PutMapping("/AsyncStorage")
-    public ResponseEntity<Clothes> getFromStorage(@Valid @RequestBody Clothes clothes) throws QuantityException {
+    @PutMapping("/getFromStorage")
+    public ResponseEntity<Clothes> getFromStorage(@Valid @RequestBody Clothes clothes) {
 
         try {
             storageRepository.obtainFromStorage(clothes);
@@ -57,6 +57,7 @@ public class StorageController {
         TypeClothes[] typeClothes = TypeClothes.values();
         Size[] sizes = Size.values();
         Color[] colors = Color.values();
+        Gender[] genders = Gender.values();
         StopWatch stopWatch = new StopWatch();
 
         stopWatch.start();
@@ -64,6 +65,9 @@ public class StorageController {
 
             clothesList.add(new Clothes(
                     typeClothes[(int) (Math.random() * 4)],
+                    "Тест пакетного обновления",
+                    "Тест пакетного обновления",
+                    genders[(int) (Math.random() * 3)],
                     sizes[(int) (Math.random() * 3)],
                     colors[(int) (Math.random() * 3)],
                     (int) (Math.random() * 100),
@@ -84,36 +88,28 @@ public class StorageController {
 
     @GetMapping("/quantity")
 
-    public ResponseEntity<Integer> obtainQuantity(@RequestParam(required = false) Color color,
+    public ResponseEntity<Integer> obtainQuantity(@RequestParam(required = false) TypeClothes typeClothes,
+                                                  @RequestParam(required = false) String brand,
+                                                  @RequestParam(required = false) String model,
+                                                  @RequestParam(required = false) Gender gender,
+                                                  @RequestParam(required = false) Color color,
                                                   @RequestParam(required = false) Size size,
-                                                  @RequestParam(required = false) TypeClothes typeClothes,
                                                   int cottonMin,
                                                   int cottonMax) {
 
-        int quantity = storageService.availabilityCheck(color, size, typeClothes, cottonMin, cottonMax);
+        int quantity = storageService.availabilityCheck(typeClothes, brand, model, gender, color, size,  cottonMin, cottonMax);
 
         return ResponseEntity.ok(quantity);
     }
 
-    @PutMapping
-    public ResponseEntity<Object> getFromStock(@Valid @RequestBody Clothes clothes) {
-        int a = 0;
-        try {
-            a = storageService.getFromStock(clothes);
-        } catch (QuantityException e) {
-            ResponseEntity.badRequest().body(e);
-        }
-        return ResponseEntity.ok().body("На складе осталось " + a);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Object> deleteFromStock(@Valid @RequestBody Clothes clothes) {
-        int a = 0;
-        try {
-            a = storageService.deleteFromStock(clothes);
-        } catch (QuantityException e) {
-            ResponseEntity.badRequest().body(e);
-        }
-        return ResponseEntity.ok().body("На складе осталось " + a);
-    }
+//    @DeleteMapping
+//    public ResponseEntity<Object> deleteFromStock(@Valid @RequestBody Clothes clothes) {
+//        int a = 0;
+//        try {
+//            a = storageService.deleteFromStock(clothes);
+//        } catch (QuantityException e) {
+//            ResponseEntity.badRequest().body(e);
+//        }
+//        return ResponseEntity.ok().body("На складе осталось " + a);
+//    }
 }

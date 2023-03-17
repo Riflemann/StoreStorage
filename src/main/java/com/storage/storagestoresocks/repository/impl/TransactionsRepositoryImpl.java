@@ -48,21 +48,23 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     @Override
     public Transaction save(Transaction transaction) {
         jdbcTemplate.update(
-                "insert into transactions_rep (typeTransaction,typeClothes,createTime, clothesQuantity) values(?, ?, ?, ?)",
+                "insert into transactions_rep (typeTransaction, typeClothes, brand_clothes, createTime, clothesQuantity) " +
+                        "values(?, ?, ?, ?, ?)",
                 transaction.getTypeTransaction().toString(),
-                transaction.getTypeClothes().toString(),
-                Timestamp.valueOf(LocalDateTime.parse(transaction.getCreateTime(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))),
+                transaction.getTypeClothes(),
+                transaction.getBrandClothes(),
+                Timestamp.valueOf(transaction.getCreateTime()),
                 transaction.getClothesQuantity());
         return transaction;
     }
 
     private Transaction mapRowToTransaction(ResultSet row, int rowNum)
             throws SQLException {
-        return new Transaction.TransactionBuilder().
-                typeTransaction(TypeTransaction.valueOf(row.getString("typeTransaction"))).
-                typeClothes(TypeClothes.valueOf(row.getString("typeClothes")).toString()).
-                createTime(row.getTimestamp("createTime").toLocalDateTime()).
-                clothesQuantity(row.getInt("clothesQuantity"))
-                .build();
+        return new Transaction(
+                TypeTransaction.valueOf(row.getString("typeTransaction")),
+                row.getString("typeClothes"),
+                row.getString("brand_clothes"),
+                row.getTimestamp("createTime").toLocalDateTime(),
+                row.getInt("clothesQuantity"));
     }
 }

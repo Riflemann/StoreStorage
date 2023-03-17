@@ -5,10 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.storagestoresocks.exceptions.QuantityException;
 import com.storage.storagestoresocks.models.clothes.Clothes;
-import com.storage.storagestoresocks.models.clothes.enums.Color;
-import com.storage.storagestoresocks.models.clothes.enums.Size;
-import com.storage.storagestoresocks.models.clothes.enums.TypeClothes;
-import com.storage.storagestoresocks.models.clothes.enums.TypeTransaction;
+import com.storage.storagestoresocks.models.clothes.enums.*;
 import com.storage.storagestoresocks.repository.StorageRepository;
 import com.storage.storagestoresocks.services.FileService;
 import com.storage.storagestoresocks.services.StorageService;
@@ -62,25 +59,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void addClothesInStorage(Clothes clothes)  {
-
         storageRepository.save(clothes);
-
-//        if (!storage.containsValue(clothes)) {
-//            storage.put(counter++, clothes);
-//        } else {
-//            int key = checkQuantity(clothes, storage);
-//            storage.get(key).setQuantity(storage.get(key).getQuantity() + clothes.getQuantity());
-//        }
-//
-//        fileService.saveToFile(fileStorageName, storage);
-//
-//        transactionsService.addTransactions(
-//                TypeTransaction.INCOMING,
-//                clothes.getTypeClothes(),
-//                clothes.getQuantity(),
-//                clothes.getCotton());
-////                clothes.getSize(),
-////                clothes.getColor());
     }
 
     @Override
@@ -93,37 +72,37 @@ public class StorageServiceImpl implements StorageService {
         return storage;
     }
 
+//    @Override
+//    public int getFromStock(Clothes clothes) throws QuantityException {
+//
+//        transactionsService.addTransactions(
+//                TypeTransaction.OUTCOMING,
+//                clothes.getTypeClothes(),
+//                clothes.getQuantity(),
+////                clothes.getSize(),
+////                clothes.getColor());
+//                clothes.getCotton());
+//
+//        return changeQuantityInStorage(clothes);
+//    }
+
+//    @Override
+//    public int deleteFromStock(Clothes clothes) throws QuantityException {
+//
+//        transactionsService.addTransactions(
+//                TypeTransaction.DEPRECATED,
+//                clothes.getTypeClothes(),
+//                clothes.getQuantity(),
+//                clothes.getCotton());
+////                clothes.getSize(),
+////                clothes.getColor());
+//
+//        return changeQuantityInStorage(clothes);
+//    }
+
     @Override
-    public int getFromStock(Clothes clothes) throws QuantityException {
-
-        transactionsService.addTransactions(
-                TypeTransaction.OUTCOMING,
-                clothes.getTypeClothes(),
-                clothes.getQuantity(),
-//                clothes.getSize(),
-//                clothes.getColor());
-                clothes.getCotton());
-
-        return changeQuantityInStorage(clothes);
-    }
-
-    @Override
-    public int deleteFromStock(Clothes clothes) throws QuantityException {
-
-        transactionsService.addTransactions(
-                TypeTransaction.DEPRECATED,
-                clothes.getTypeClothes(),
-                clothes.getQuantity(),
-                clothes.getCotton());
-//                clothes.getSize(),
-//                clothes.getColor());
-
-        return changeQuantityInStorage(clothes);
-    }
-
-    @Override
-    public int availabilityCheck(Color color, Size size, TypeClothes typeClothes, int cottonMin, int cottonMax) {
-
+    public int availabilityCheck(TypeClothes typeClothes, String brand, String model, Gender gender,
+                                 Color color, Size size, int cottonMin, int cottonMax) {
 //        return storage.values().stream()
 //                .filter(clothes ->
 //                        (color == null || color == clothes.getColor())
@@ -134,7 +113,7 @@ public class StorageServiceImpl implements StorageService {
 //                .map(Clothes::getQuantity)
 //                .mapToInt(Integer::valueOf)
 //                .sum();
-        return storageRepository.availabilityCheck(typeClothes, size, color, cottonMin, cottonMax);
+        return storageRepository.availabilityCheck(typeClothes, brand, model, gender, size, color, cottonMin, cottonMax);
     }
 
     public static int checkQuantity(Clothes clothes, Map<Integer, Clothes> map) throws QuantityException {

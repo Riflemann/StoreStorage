@@ -1,17 +1,14 @@
 package com.storage.storagestoresocks.models.clothes.enums;
 
 public enum Size {
-
-    SIZE_S(36.0),
-
-    SIZE_M(38.0),
-
-    SIZE_L(40.0);
-
-    final double size;
-
-    Size(double size) {
-        this.size = size;
-    }
+    SIZE_XXS,
+    SIZE_XS,
+    SIZE_S,
+    SIZE_M,
+    SIZE_L,
+    SIZE_XL,
+    SIZE_XXL,
+    SIZE_XXXL,
+    SIZE_XXXXL;
 
 }

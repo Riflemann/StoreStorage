@@ -44,20 +44,20 @@ public class TransactionsController {
         return ResponseEntity.ok().body(transactionsService.getAllTransactions());
     }
 
-    @GetMapping("/quantity")
-    public ResponseEntity<String> obtainQuantity(@RequestParam(required = false) Color color,
-                                                  @RequestParam(required = false) Size size,
-                                                  @RequestParam(required = false) TypeClothes typeClothes,
-                                                  @RequestParam(required = false) String fromDate,
-                                                  @RequestParam(required = false) String toDate,
-                                                  int cottonMin,
-                                                  int cottonMax) {
-
-        List<Transaction> transactions = new ArrayList<>(transactionsService.extractList(fromDate, toDate, cottonMin, cottonMax));
-        int quantity = transactionsService.calculateQuantity(color, size, typeClothes);
-
-        return ResponseEntity.ok().body("На складе найдено: " + quantity + "шт.\n" + transactions);
-    }
+//    @GetMapping("/quantity")
+//    public ResponseEntity<String> obtainQuantity(@RequestParam(required = false) Color color,
+//                                                  @RequestParam(required = false) Size size,
+//                                                  @RequestParam(required = false) TypeClothes typeClothes,
+//                                                  @RequestParam(required = false) String fromDate,
+//                                                  @RequestParam(required = false) String toDate,
+//                                                  int cottonMin,
+//                                                  int cottonMax) {
+//
+//        List<Transaction> transactions = new ArrayList<>(transactionsService.extractList(fromDate, toDate, cottonMin, cottonMax));
+//        int quantity = transactionsService.calculateQuantity(color, size, typeClothes);
+//
+//        return ResponseEntity.ok().body("На складе найдено: " + quantity + "шт.\n" + transactions);
+//    }
 
 
 }
